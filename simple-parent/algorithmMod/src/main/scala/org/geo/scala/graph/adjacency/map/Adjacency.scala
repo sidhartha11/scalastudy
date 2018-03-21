@@ -31,7 +31,7 @@ object MatricConstants extends Enumeration {
 }
 
 trait Adjacency[T] {
-  def neighbor(u: T, v: T)
+  def addEdge(u: T, v: T)
   def printAdjacency
 }
 
@@ -46,7 +46,7 @@ object Adjacency {
     /** create an empty map of maps to store the vertices and edges **/
     private var adjacencyMap: mutable.Map[T, mutable.Map[T, T]] = new mutable.HashMap[T, mutable.Map[T, T]]()
 
-    def neighbor(u: T, v: T): Unit = {
+    def addEdge(u: T, v: T): Unit = {
       /** if biDir then must update both as neighbors **/
       biDir match {
         case MatricConstants.undirected => undirectedInsertion(u, v)
@@ -91,22 +91,53 @@ object Adjacency {
 }
 
 object runnerTest {
+  def testString = {
+        println("testing")
+
+    val node =  StringNode("bob",10,false)
+    println("created node:" + node)
+    val a: Adjacency[String] = Adjacency(MatricConstants.undirected)
+
+    a.addEdge("A", "Z")
+    a.addEdge("A", "B")
+    a.addEdge("C", "A")
+    a.addEdge("D", "E")
+    a.addEdge("E", "D")
+    a.addEdge("E", "A")
+    a.addEdge("D", "Q")
+    a.addEdge("D", "R")
+    a.addEdge("D", "T")
+    a.addEdge("X", "T")
+    a.addEdge("X", "A")
+
+    /** list the adjacency map **/
+    a.printAdjacency
+  }
   def main(args: Array[String]) {
     println("testing")
 
-    val a: Adjacency[String] = Adjacency(MatricConstants.undirected)
+    val node =  StringNode("bob",10,false)
+    println("created node:" + node)
+    val a: Adjacency[StringNode] = Adjacency(MatricConstants.undirected)
 
-    a.neighbor("A", "Z")
-    a.neighbor("A", "B")
-    a.neighbor("C", "A")
-    a.neighbor("D", "E")
-    a.neighbor("E", "D")
-    a.neighbor("E", "A")
-    a.neighbor("D", "Q")
-    a.neighbor("D", "R")
-    a.neighbor("D", "T")
-    a.neighbor("X", "T")
-    a.neighbor("X", "A")
+    val data = 
+   
+    List(("A", "Z",10)
+    ,("A", "B",20)
+    ,("C", "A",20)
+    ,("D", "E",5)
+    ,("E", "D",6)
+    ,("E", "A",90)
+    ,("D", "Q",100)
+    ,("D", "R",3)
+    ,("D", "T",56)
+    ,("X", "T",8)
+    ,("X", "A",10)
+     )
+     
+     for ( (node,neighbor,weight) <- data ) {
+       a.addEdge(StringNode(node,weight,false),StringNode(neighbor,weight,false))
+     }
 
     /** list the adjacency map **/
     a.printAdjacency
