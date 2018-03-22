@@ -1,4 +1,4 @@
-package org.geo.scala.graph.undirected
+package org.geo.scala.graph.undirected.map
 
 object GraphConstants extends Enumeration {
   val directed = Value("directed graph")

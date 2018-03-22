@@ -1,4 +1,4 @@
-package org.geo.scala.graph.undirected
+package org.geo.scala.graph.undirected.map
 
 case class GraphVertex(name: String, weight: Int, visited: Boolean) {
   override def equals(o: Any) = o match {

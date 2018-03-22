@@ -1,4 +1,4 @@
-package org.geo.scala.graph.undirected
+package org.geo.scala.graph.undirected.map
 
 import scala.collection.mutable
 import scala.io.Source
@@ -6,10 +6,11 @@ import GraphUtilities._
 
 trait Graph[T] {
   def addEdge(v: T, w: T) // add edge v-w to this graph
-  def adj(v: T): List[T] // vertices adjacent to v
+  def adj(v: T): Iterable[T] // vertices adjacent to v
   def V: Int // number of vertices
   def E: Int // number edges
   def printGraph: Unit // print the contents of graph
+  def getGraph: mutable.Map[T, mutable.Map[T, T]]
 }
 
 object Graph {
@@ -24,7 +25,7 @@ object Graph {
     private[this] var numberVertices = 0
     private[this] var numberEdges = 0
     /** create an empty map of maps to store the vertices and edges **/
-    private var GraphMap: mutable.Map[T, mutable.Map[T, T]] = new mutable.HashMap[T, mutable.Map[T, T]]()
+    private var graphMap: mutable.Map[T, mutable.Map[T, T]] = new mutable.HashMap[T, mutable.Map[T, T]]()
 
     def addEdge(u: T, v: T): Unit = {
       /** if biDir then must update both as neighbors **/
@@ -35,12 +36,15 @@ object Graph {
     }
 
     private def addMapping(u: T, v: T): Unit = {
-      var t = GraphMap get u
+      var t = graphMap get u
       if (t == None) {
+        numberVertices += 1
+        numberEdges += 1
         val r = new mutable.HashMap[T, T]()
         r += (v -> v)
-        GraphMap += (u -> r)
+        graphMap += (u -> r)
       } else {
+        numberEdges += 1
         t.get += (v -> v)
       }
     }
@@ -58,22 +62,44 @@ object Graph {
     }
 
     def printGraph = {
-      for ((key, list) <- GraphMap) {
+      numberEdges = 0
+      numberVertices = 0
+      for ((key, list) <- graphMap) {
+        numberVertices += 1
         print("\nVertex|" + key + "| ")
         for ((e1, e2) <- list) {
+          numberEdges += 1
           print(e2 + "->")
         }
         print("nil")
       }
+      println
+    }
+    
+    def adj(v: T): Iterable[T] = {
+      val a = graphMap get v
+      a.get.values
     }
 
-    def adj(v: T): List[T] = {
-      return List()
+    /**
+     * returns the number of vertices 
+     * @see org.geo.scala.graph.undirected.Graph#V()
+     */
+    def V: Int = numberVertices
+ 
+    /**
+     * returns the number of edges
+     * @see org.geo.scala.graph.undirected.Graph#E()
+     */
+    def E: Int =  {
+        biDir match {
+        case GraphConstants.undirected => numberEdges / 2 
+        case GraphConstants.directed   => numberEdges
+      }
     }
 
-    def V: Int = numberVertices // number of vertices
-    def E: Int = numberEdges // number edges
+    override def toString = "Graph:" + graphMap.mkString("[", ",", "]")
 
-    override def toString = "Graph:" + GraphMap.mkString("[", ",", "]")
+    def getGraph: mutable.Map[T, mutable.Map[T, T]] = graphMap
   }
 }
