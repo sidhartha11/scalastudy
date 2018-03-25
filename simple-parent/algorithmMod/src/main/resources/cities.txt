@@ -1,0 +1,16 @@
+Philadelphia, Pittsburgh,100
+Boston, New York,100
+Hartford, New York,100
+Los Angeles, San Diego,100
+New York, Croton-Harmon,100
+St. Petersburg, Tampa,100
+Boston,Tampa,100
+Tampa,St. Petersburg,100
+St. Petersburg,Boston,100
+Montclair NJ, Bloomfield NJ,100
+Bloomfield NJ, Caldwell NJ,100
+ZooLand Delaware, Fayetteville Tenn,100
+ZooLand Delaware, Caldwell NJ,100
+Montclair NJ, New York,100
+Caldwell NJ, Fish City,100
+Caldwell NJ, Fayetteville Tenn,100

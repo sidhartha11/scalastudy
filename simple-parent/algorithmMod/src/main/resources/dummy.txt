@@ -1,17 +1,14 @@
-A, B  , 100
-A, C  , 200
-B, D  , 100
-E, R  , 30
-R,B,23
-A,R,78
-Z,A,100
-A,Z,100
-Z,A,100
-A,Z,100
-Z,A,100
-A,Z,100
-A,A,11
-Z,Z,1001
-B,B,34
-F,I,45
-I,F,65
+Philadelphia, Pittsburgh,100
+Boston, New York,100
+Hartford, New York,100
+Los Angeles, San Diego,100
+New York, Croton-Harmon,100
+St. Petersburg, Tampa,100
+Boston,Tampa,100
+Tampa,St. Petersburg,100
+St. Petersburg,Boston,100
+Montclair NJ, Bloomfield NJ,100
+Bloomfield NJ, Caldwell NJ,100
+ZooLand Delaware, Fayetteville Tenn,100
+ZooLand Delaware, Caldwell NJ,100
+Montclair NJ, New York,100

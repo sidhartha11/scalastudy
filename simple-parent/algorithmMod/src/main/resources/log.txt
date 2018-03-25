@@ -1,0 +1,73 @@
+a.V=0,a.E=0
+adding nodes
+reading file:C:/githubstuff/javaprojs/studystuff/scalastudy/simple-parent/algorithmMod/src/main//resources/cities.txt
+read #0 records
+
+maxDegree of a is 4
+
+printing graph via printGraph
+
+Vertex|Philadelphia| Pittsburgh->nil
+Vertex|Pittsburgh| Philadelphia->nil
+Vertex|Boston| St. Petersburg->Tampa->New York->nil
+Vertex|New York| Montclair NJ->Croton-Harmon->Hartford->Boston->nil
+Vertex|Hartford| New York->nil
+Vertex|Los Angeles| San Diego->nil
+Vertex|San Diego| Los Angeles->nil
+Vertex|Croton-Harmon| New York->nil
+Vertex|St. Petersburg| Boston->Tampa->Tampa->nil
+Vertex|Tampa| St. Petersburg->Boston->St. Petersburg->nil
+Vertex|Montclair NJ| New York->Bloomfield NJ->nil
+Vertex|Bloomfield NJ| Caldwell NJ->Montclair NJ->nil
+Vertex|Caldwell NJ| Fayetteville Tenn->Fish City->ZooLand Delaware->Bloomfield NJ->nil
+Vertex|ZooLand Delaware| Caldwell NJ->Fayetteville Tenn->nil
+Vertex|Fayetteville Tenn| Caldwell NJ->ZooLand Delaware->nil
+Vertex|Fish City| Caldwell NJ->nil
+...
+
+print contents of  map
+Philadelphia:ArrayBuffer(Pittsburgh)
+Pittsburgh:ArrayBuffer(Philadelphia)
+Boston:ArrayBuffer(St. Petersburg, Tampa, New York)
+New York:ArrayBuffer(Montclair NJ, Croton-Harmon, Hartford, Boston)
+Hartford:ArrayBuffer(New York)
+Los Angeles:ArrayBuffer(San Diego)
+San Diego:ArrayBuffer(Los Angeles)
+Croton-Harmon:ArrayBuffer(New York)
+St. Petersburg:ArrayBuffer(Boston, Tampa, Tampa)
+Tampa:ArrayBuffer(St. Petersburg, Boston, St. Petersburg)
+Montclair NJ:ArrayBuffer(New York, Bloomfield NJ)
+Bloomfield NJ:ArrayBuffer(Caldwell NJ, Montclair NJ)
+Caldwell NJ:ArrayBuffer(Fayetteville Tenn, Fish City, ZooLand Delaware, Bloomfield NJ)
+ZooLand Delaware:ArrayBuffer(Caldwell NJ, Fayetteville Tenn)
+Fayetteville Tenn:ArrayBuffer(Caldwell NJ, ZooLand Delaware)
+Fish City:ArrayBuffer(Caldwell NJ)
+dequeued:Montclair NJ,class org.geo.scala.graph.GraphVertex
+dequeued:New York,class org.geo.scala.graph.GraphVertex
+dequeued:Bloomfield NJ,class org.geo.scala.graph.GraphVertex
+dequeued:Croton-Harmon,class org.geo.scala.graph.GraphVertex
+dequeued:Hartford,class org.geo.scala.graph.GraphVertex
+dequeued:Boston,class org.geo.scala.graph.GraphVertex
+dequeued:Caldwell NJ,class org.geo.scala.graph.GraphVertex
+dequeued:St. Petersburg,class org.geo.scala.graph.GraphVertex
+dequeued:Tampa,class org.geo.scala.graph.GraphVertex
+dequeued:Fayetteville Tenn,class org.geo.scala.graph.GraphVertex
+dequeued:Fish City,class org.geo.scala.graph.GraphVertex
+dequeued:ZooLand Delaware,class org.geo.scala.graph.GraphVertex
+Map(Caldwell NJ -> true, Boston -> true, ZooLand Delaware -> true, New York -> true, St. Petersburg -> true, Tampa -> true, Croton-Harmon -> true, Fish City -> true, Fayetteville Tenn -> true, Montclair NJ -> true, Hartford -> true, Bloomfield NJ -> true)
+elapsed:20
+showing paths to Montclair NJ
+
+show paths of each vertex:
+Montclair NJ to Boston:Montclair NJ-New York-Boston
+Montclair NJ to New York:Montclair NJ-New York
+Montclair NJ to Hartford:Montclair NJ-New York-Hartford
+Montclair NJ to Croton-Harmon:Montclair NJ-New York-Croton-Harmon
+Montclair NJ to St. Petersburg:Montclair NJ-New York-Boston-St. Petersburg
+Montclair NJ to Tampa:Montclair NJ-New York-Boston-Tampa
+Montclair NJ to Montclair NJ:Montclair NJ
+Montclair NJ to Bloomfield NJ:Montclair NJ-Bloomfield NJ
+Montclair NJ to Caldwell NJ:Montclair NJ-Bloomfield NJ-Caldwell NJ
+Montclair NJ to ZooLand Delaware:Montclair NJ-Bloomfield NJ-Caldwell NJ-ZooLand Delaware
+Montclair NJ to Fayetteville Tenn:Montclair NJ-Bloomfield NJ-Caldwell NJ-Fayetteville Tenn
+Montclair NJ to Fish City:Montclair NJ-Bloomfield NJ-Caldwell NJ-Fish City
