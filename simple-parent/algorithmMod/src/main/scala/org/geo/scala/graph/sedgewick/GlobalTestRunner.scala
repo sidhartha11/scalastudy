@@ -4,6 +4,7 @@ import org.geo.scala.graph.sedgewick.undirected.dfs.{ buffer => BUF }
 import org.geo.scala.graph.sedgewick.undirected.dfs.{ map => MAP }
 
 import org.geo.scala.graph._
+import scala.collection.mutable
 
 /**
  * @author George Curington
@@ -58,8 +59,71 @@ object GlobalTestRunner {
   def direction = GraphConstants.undirected
   // def nodeToAnalyze="Montclair NJ"
   def nodeToAnalyze="997847"
-  def showTrace = false
+  def showTrace = true
   /** BUFFER BASED **/
+  
+    /** TEST DFS algorithm **/
+  def testConnectedBUForMAP = {
+    /** create a graph object **/
+//  val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+    val a = MAP.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    if (showTrace) {
+      println("\nprinting graph via printGraph")
+      a.printGraph
+      println("\nprint contents of  map")
+      for (v <- a.getGraph) {
+        println(v._1 + ":" + a.adj(v._1))
+      }
+    }
+
+    println("running connected components test")
+    val start = System.currentTimeMillis()
+    
+    val cc = MAP.ConnectedComponents(a)
+//  val cc = BUF.ConnectedComponents(a)
+    /** get the number of connected components **/
+    val m = cc.count
+    /**
+     * Create a map of Int,Queue associations where each Int
+     * is a pointer to a Queue of vertices representing 
+     * connected components
+     */
+    val components = mutable.Map[Int,mutable.Queue[GraphVertex]]()
+    
+    /**
+     * traverse thru all known vertices, locate the Integer
+     * representing their connected components id,
+     * if the queue for the component is not currently in the map,
+     * put it there.
+     * put the current vertex into the queue for that component,
+     */
+    
+    for ( (v,l) <- a.getGraph ) {
+      val comp = components get (cc.iD(v))
+      if ( comp == None ) {
+        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
+        queue += v
+        components += (cc.iD(v) -> queue)
+      } else {
+        comp.get += v
+      }
+    }
+    
+    /** scan thru the components Map and print out the contents **/
+    for ( (c_id , q ) <- components ) {
+      print("component id:" + c_id + "\n    ")
+      for ( queue_item <- q ) {
+        print(queue_item + " : ")
+      }
+      println()
+    }
+    
+    val end = System.currentTimeMillis()
+    println("elapsed:%d".format((end - start)))
+
+
+  }
   /** TEST DFS algorithm **/
   def testDFSBUF = {
     /** create a graph object **/
@@ -259,6 +323,7 @@ object GlobalTestRunner {
     // testBFSBUF
     // testBFSMAP
     // testDFSBUF
-    testBFSMAPLarge("princetonLarge.txt")
+    // testBFSMAPLarge("princetonMedium.txt")
+    testConnectedBUForMAP
   }
 }

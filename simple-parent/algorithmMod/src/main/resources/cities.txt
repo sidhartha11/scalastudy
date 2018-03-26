@@ -14,3 +14,4 @@ ZooLand Delaware, Caldwell NJ,100
 Montclair NJ, New York,100
 Caldwell NJ, Fish City,100
 Caldwell NJ, Fayetteville Tenn,100
+calamazoo Michigan, Los Angeles California,100
