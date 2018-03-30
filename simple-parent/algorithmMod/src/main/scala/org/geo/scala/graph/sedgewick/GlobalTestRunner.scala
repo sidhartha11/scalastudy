@@ -56,14 +56,14 @@ object GlobalTestRunner {
    *  princetonMedium.txt ( 400K records )
    *  city.txt  small file of different cities
    */
-  def direction = GraphConstants.directed
+  def direction = GraphConstants.undirected
   // def nodeToAnalyze="Montclair NJ"
-  def nodeToAnalyze = "997847"
+  def nodeToAnalyze = "Death Valley"
   def showTrace = true
   def filename = "city_cycle.txt"
   // def filename = "numbers.txt"
 
-  /** TEST Connected Components  algorithm **/
+  /** TEST finding cycle in graph**/
   def testCycleBUForMAP = {
     /** create a graph object **/
     //  val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
@@ -126,6 +126,72 @@ object GlobalTestRunner {
     println("elapsed:%d".format((end - start)))
     
     println("Cycle Detected:%b".format(cc.isCyclic))
+
+  }
+  
+    /** TEST finding cycle in graph**/
+  def testTwoColorBUForMAP = {
+    /** create a graph object **/
+    //  val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+//    val a = MAP.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
+
+    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    if (showTrace) {
+      println("\nprinting graph via printGraph")
+      a.printGraph
+      println("\nprint contents of  map")
+      for (v <- a.getGraph) {
+        println(v._1 + ":" + a.adj(v._1))
+      }
+    }
+
+    println("running TwoColor test")
+    val start = System.currentTimeMillis()
+
+    val cc = MAP.TwoColor(a)
+    //  val cc = BUF.ConnectedComponents(a)
+    /** get the number of connected components **/
+    val m = cc.count
+    /**
+     * Create a map of Int,Queue associations where each Int
+     * is a pointer to a Queue of vertices representing
+     * connected components
+     */
+    val components = mutable.Map[Int, mutable.Queue[GraphVertex]]()
+
+    /**
+     * traverse thru all known vertices, locate the Integer
+     * representing their connected components id,
+     * if the queue for the component is not currently in the map,
+     * put it there.
+     * put the current vertex into the queue for that component,
+     */
+
+    for ((v, l) <- a.getGraph) {
+      val comp = components get (cc.iD(v))
+      if (comp == None) {
+        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
+        queue += v
+        components += (cc.iD(v) -> queue)
+      } else {
+        comp.get += v
+      }
+    }
+
+    /** scan thru the components Map and print out the contents **/
+    for ((c_id, q) <- components) {
+      print("component id:" + c_id + "\n    ")
+      for (queue_item <- q) {
+        print(queue_item + " : ")
+      }
+      println()
+    }
+
+    val end = System.currentTimeMillis()
+    println("elapsed:%d".format((end - start)))
+    
+    println("isBipartite Detected:%b".format(cc.isBipartite))
 
   }
   /** TEST Connected Components  algorithm **/
@@ -197,7 +263,9 @@ object GlobalTestRunner {
   /** TEST DFS algorithm **/
   def testDFSBUF = {
     /** create a graph object **/
-    val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+    val a = BUF.GraphUtilities.initializeGraph(filename, direction)
+        println("hashCode of buffer=%s".format(a.hashCode()))
+
     println("\nmaxDegree of a is %d".format(BUF.GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
@@ -236,8 +304,12 @@ object GlobalTestRunner {
   /** TEST Breadth First Search **/
   def testBFSBUF = {
     /** create a graph object **/
-    val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+  
+    val a = BUF.GraphUtilities.initializeGraph(filename, direction)
+    println("hashCode of buffer=%s".format(a.hashCode()))
     println("\nmaxDegree of a is %d".format(BUF.GraphUtilities.maxDegree(a)))
+    
+    
     if (showTrace) {
       println("\nprinting graph via printGraph")
       a.printGraph
@@ -275,7 +347,7 @@ object GlobalTestRunner {
   /** TEST DFS algorithm **/
   def testDFSMAP = {
     /** create a graph object **/
-    val a = MAP.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
     println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
@@ -314,7 +386,7 @@ object GlobalTestRunner {
   /** TEST Breadth First Search **/
   def testBFSMAP = {
     /** create a graph object **/
-    val a = MAP.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
+    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
     println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
@@ -391,10 +463,11 @@ object GlobalTestRunner {
   def main(args: Array[String]) {
     // testBUFimplementation
     // testBFSBUF
-    // testBFSMAP
-    // testDFSBUF
+    testBFSMAP
+    testDFSBUF
     // testBFSMAPLarge("princetonMedium.txt")
     // testConnectedBUForMAP
-    testCycleBUForMAP
+    // testCycleBUForMAP
+    // testTwoColorBUForMAP
   }
 }

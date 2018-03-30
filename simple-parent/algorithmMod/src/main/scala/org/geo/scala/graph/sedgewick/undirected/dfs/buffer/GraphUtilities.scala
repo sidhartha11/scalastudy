@@ -76,6 +76,7 @@ object GraphUtilities {
    * directional/undirectional based on biDir
    */
   def initializeGraph(filename: String, biDir: GraphConstants.Value): Graph[GraphVertex] = {
+    clearCache
       initializeGraphInner(base.trim() + filename,biDir)
   }
         def initializeGraph(based: String , filename: String, biDir: GraphConstants.Value): Graph[GraphVertex] = {

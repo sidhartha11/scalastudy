@@ -10,6 +10,10 @@ import java.io.File
 object GlobalUtilities {
   var cache: mutable.Map[String, Int] = mutable.Map[String, Int]()
 
+  def clearCache : Unit ={
+    println("clearing cache")
+    cache.clear
+  }
   def base =
     """|C:/githubstuff/javaprojs/studystuff
       |/scalastudy/simple-parent/algorithmMod

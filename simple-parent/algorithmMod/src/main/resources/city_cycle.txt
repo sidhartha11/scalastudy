@@ -1,4 +1,10 @@
 Philadelphia, Pittsburgh,100
 Pittsburgh, New York,100
-New York, Delaware ,100
-Delaware, Delaware ,100
+Montclair, Delaware ,100
+Delaware, Huntington ,100
+Huntington, Montclair, 100
+SanFran, Huntington, 100
+PeeNuckle, Battle Creek, 100
+Battle Creek, Death Valley, 100
+Montclair, Death Valley, 200
+SanFran, Pittsburgh, 100
