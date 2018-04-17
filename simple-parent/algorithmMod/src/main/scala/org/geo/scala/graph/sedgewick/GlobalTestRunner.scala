@@ -1,10 +1,10 @@
 package org.geo.scala.graph.sedgewick
 
-import org.geo.scala.graph.sedgewick.undirected.dfs.{ buffer => BUF }
-import org.geo.scala.graph.sedgewick.undirected.dfs.{ map => MAP }
-
-import org.geo.scala.graph._
+import org.geo.scala.graph.sedgewick.{ adjacency => MAP }
 import scala.collection.mutable
+
+import org.geo.scala.graph.GraphConstants
+import org.geo.scala.graph.GraphVertex
 
 /**
  * @author George Curington
@@ -33,7 +33,7 @@ import scala.collection.mutable
  * undirected or directed.
  * e.g.
  * An instantiation of the Graph Object is as follows:
- * val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, GraphConstants.undirected)
+ * val a = BUF.(GlobalUtilities.filename, GraphConstants.undirected)
  * So here, filename will contain the input data in the form of:
  * node1,node2,weight where node1 and node2 are two connected verticies and weight is an
  * indicator of the cost of the edge between them. ( currently not being used in this implementation )
@@ -66,11 +66,9 @@ object GlobalTestRunner {
   /** TEST finding cycle in graph**/
   def testCycleBUForMAP = {
     /** create a graph object **/
-    //  val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
-//    val a = MAP.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
-    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
+    val a = GraphUtilities.initializeGraph(filename, direction)
 
-    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
       a.printGraph
@@ -132,11 +130,9 @@ object GlobalTestRunner {
     /** TEST finding cycle in graph**/
   def testTwoColorBUForMAP = {
     /** create a graph object **/
-    //  val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
-//    val a = MAP.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
-    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
+    val a = GraphUtilities.initializeGraph(filename, direction)
 
-    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
       a.printGraph
@@ -150,7 +146,6 @@ object GlobalTestRunner {
     val start = System.currentTimeMillis()
 
     val cc = MAP.TwoColor(a)
-    //  val cc = BUF.ConnectedComponents(a)
     /** get the number of connected components **/
     val m = cc.count
     /**
@@ -197,11 +192,9 @@ object GlobalTestRunner {
   /** TEST Connected Components  algorithm **/
   def testConnectedBUForMAP = {
     /** create a graph object **/
-    //  val a = BUF.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
-//    val a = MAP.GraphUtilities.initializeGraph(GlobalUtilities.filename, direction)
-    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
+    val a = GraphUtilities.initializeGraph(filename, direction)
 
-    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
       a.printGraph
@@ -215,7 +208,6 @@ object GlobalTestRunner {
     val start = System.currentTimeMillis()
 
     val cc = MAP.ConnectedComponents(a)
-    //  val cc = BUF.ConnectedComponents(a)
     /** get the number of connected components **/
     val m = cc.count
     /**
@@ -259,96 +251,14 @@ object GlobalTestRunner {
   }
   
   
-    /** BUFFER BASED **/
-  /** TEST DFS algorithm **/
-  def testDFSBUF = {
-    /** create a graph object **/
-    val a = BUF.GraphUtilities.initializeGraph(filename, direction)
-        println("hashCode of buffer=%s".format(a.hashCode()))
 
-    println("\nmaxDegree of a is %d".format(BUF.GraphUtilities.maxDegree(a)))
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-    val s = GraphVertex(nodeToAnalyze, 100, true)
-    val start = System.currentTimeMillis()
-    val search = BUF.Search(a, s)
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-
-    println("showing paths to " + s)
-    println("\nshow paths of each vertex:")
-    for (v <- a.getGraph) {
-
-      if (search.hasPathTo(v._1)) {
-        print(s + " to " + v._1 + ":")
-        val path = search.pathTo(v._1)
-        //        println("searching path:" + path)
-        for (x <- path) {
-          if (x == s)
-            print(x)
-          else
-            print("-" + x)
-        }
-        println()
-      }
-      //      println("finished...." )
-    }
-  }
-
-  /** TEST Breadth First Search **/
-  def testBFSBUF = {
-    /** create a graph object **/
-  
-    val a = BUF.GraphUtilities.initializeGraph(filename, direction)
-    println("hashCode of buffer=%s".format(a.hashCode()))
-    println("\nmaxDegree of a is %d".format(BUF.GraphUtilities.maxDegree(a)))
-    
-    
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-    val s = GraphVertex(nodeToAnalyze, 100, true)
-    val start = System.currentTimeMillis()
-    val search = BUF.BreadthFirstPaths(a, s)
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-
-    println("showing paths to " + s)
-    println("\nshow paths of each vertex:")
-    for (v <- a.getGraph) {
-
-      if (search.hasPathTo(v._1)) {
-        print(s + " to " + v._1 + ":")
-        val path = search.pathTo(v._1)
-        //        println("searching path:" + path)
-        for (x <- path) {
-          if (x == s)
-            print(x)
-          else
-            print("-" + x)
-        }
-        println()
-      }
-    }
-  }
 
   /** MAPPED BASED **/
   /** TEST DFS algorithm **/
   def testDFSMAP = {
     /** create a graph object **/
-    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
-    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    val a = GraphUtilities.initializeGraph(filename, direction)
+    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
       a.printGraph
@@ -379,15 +289,14 @@ object GlobalTestRunner {
         }
         println()
       }
-      //      println("finished...." )
     }
   }
 
   /** TEST Breadth First Search **/
   def testBFSMAP = {
     /** create a graph object **/
-    val a = MAP.GraphUtilities.initializeGraph(filename, direction)
-    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    val a = GraphUtilities.initializeGraph(filename, direction)
+    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
       a.printGraph
@@ -421,10 +330,12 @@ object GlobalTestRunner {
     }
   }
 
-  def testBFSMAPLarge(filename: String) = {
+  def testBFSMAPLarge(filename: String,nodeToAnalyze: String,direction: GraphConstants.Value) = {
     /** create a graph object **/
-    val a = MAP.GraphUtilities.initializeGraph("C:\\temp\\", filename, direction)
-    println("\nmaxDegree of a is %d".format(MAP.GraphUtilities.maxDegree(a)))
+    println("running BFS using Map Adjacent Structure,%s,%s,%s".format(filename,nodeToAnalyze,direction))
+    
+    val a = GraphUtilities.initializeGraph("C:\\temp\\", filename, direction)
+    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
     if (showTrace) {
       println("\nprinting graph via printGraph")
       a.printGraph
@@ -461,13 +372,10 @@ object GlobalTestRunner {
    * MAIN testing entrance point
    */
   def main(args: Array[String]) {
-    // testBUFimplementation
-    // testBFSBUF
-    testBFSMAP
-    testDFSBUF
-    // testBFSMAPLarge("princetonMedium.txt")
-    // testConnectedBUForMAP
-    // testCycleBUForMAP
-    // testTwoColorBUForMAP
+//    testBFSMAP
+    testBFSMAPLarge("princetonMedium.txt","997538",GraphConstants.undirected)
+//    testConnectedBUForMAP
+//    testCycleBUForMAP
+//   testTwoColorBUForMAP
   }
 }
