@@ -8,9 +8,10 @@ import org.geo.scala.graph.GraphConstants
 
 trait DepthFirstPaths[T] {
   /** find all paths from source s **/
-  def process(t: GraphConstants.Value)(s: T): Unit 
+  def process(t: GraphConstants.Value)(s: T): Unit
   def hasPathTo(v: T): Boolean // is there a path from s to v?
-  def pathTo(v: T,s: T): Iterable[T] /** path from s to v **/
+  def pathTo(v: T, s: T): Iterable[T]
+  /** path from s to v **/
 }
 
 object DepthFirstPaths {
@@ -24,7 +25,7 @@ object DepthFirstPaths {
     println("instantiating DepthFirstPathsImpl")
     /** map used to determine is a vertex is connected to the input vertex,s **/
     private var marked: mutable.Map[T, Boolean] = _
-    private var edgeTo: mutable.Map[T,T] = _
+    private var edgeTo: mutable.Map[T, T] = _
 
     /** count of all vertices connected to input vertex s **/
     var counter = 0
@@ -38,7 +39,7 @@ object DepthFirstPaths {
       /** count each connected vertex **/
       counter += 1
       /** get the adjacent neighbors of v **/
-      for (w <- graph.adj(v)) {
+      for (w <- graph.adjreverse(v)) {
         /** if this neigbor has not been seen yet **/
         if (!hasPathTo(w)) {
           edgeTo(w) = v
@@ -52,19 +53,20 @@ object DepthFirstPaths {
       val stack = mutable.Stack[T]()
       /** push the first element onto the stack **/
       stack.push(v)
+     
       while (!stack.isEmpty) {
         val s = stack.pop()
-        if ((marked get s) == None) {
+        if (!hasPathTo(s)) {
           counter += 1
           marked(s) = true
-        }
 
-        /** get all the adjacent vertices of s **/
-        /** push each one that is not marked onto the stack **/
-        for (w <- graph.adj(s)) {
-          if ((marked get w) == None) {
-            edgeTo += (w -> v)
-            stack.push(w)
+          /** get all the adjacent vertices of s **/
+          /** push each one that is not marked onto the stack **/
+          for (w <- graph.adj(s)) {
+            if (!hasPathTo(w)) {
+              edgeTo += (w -> s)
+              stack.push(w)
+            }
           }
         }
       }
@@ -82,14 +84,13 @@ object DepthFirstPaths {
      */
     def count: Int = counter
 
-
     def hasPathTo(v: T): Boolean = {
       val t = marked get v
       if (t == None) false
       else true
     }
-    
-    def pathTo(v: T,s: T): Iterable[T] = {
+
+    def pathTo(v: T, s: T): Iterable[T] = {
       if (!hasPathTo(v)) {
         Iterable.empty[T]
       } else {

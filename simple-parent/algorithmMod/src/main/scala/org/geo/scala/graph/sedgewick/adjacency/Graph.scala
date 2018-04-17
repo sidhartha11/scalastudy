@@ -10,25 +10,26 @@ import org.geo.scala.graph.GraphConstants
  * @since 4/14/2018
  * <pre>
  * trait Graph[T]
- * 
+ *
  * This is a trait. It is used to give a public interface
  * to users the Adjacency Structure.
  * This version of the adjacency structure is based solely on
- * hash maps. 
- * The list of vertices is a Map containing a key for 
+ * hash maps.
+ * The list of vertices is a Map containing a key for
  * the vertex and a value for the list of neighbor vertices.
- * The list of neighbor vertices is also a Map. There is some 
- * additional space used to represent the vertices since it is 
+ * The list of neighbor vertices is also a Map. There is some
+ * additional space used to represent the vertices since it is
  * not necessary to contain a complete vertex object as the key.
  * But this implementation does just that. The vertex object, represented
- * buy the type "T" generic parameter can be any class object that 
- * overrided hashcode and equals. 
- * 
+ * buy the type "T" generic parameter can be any class object that
+ * overrided hashcode and equals.
+ *
  * </pre>
  */
 trait Graph[T] {
   def addEdge(v: T, w: T) // add edge v-w to this graph
   def adj(v: T): Iterable[T] // vertices adjacent to v
+  def adjreverse(v: T): Iterable[T]
   def V: Int // number of vertices
   def E: Int // number edges
   def printGraph: Unit // print the contents of graph
@@ -36,10 +37,10 @@ trait Graph[T] {
 }
 
 /**
- * This is a companion object. It defines an apply method that is 
+ * This is a companion object. It defines an apply method that is
  * used to allow for the construction of an adjacency structure using
  * this form:
- * Graph(GraphConstants.<somedirection>) 
+ * Graph(GraphConstants.<somedirection>)
  * The actual implementation of the adjacency structure is private inside
  * the companion object:
  * private class GraphImpl[T]
@@ -49,41 +50,40 @@ object Graph {
   def apply[T](biDir: GraphConstants.Value): Graph[T] =
     new GraphImpl[T](biDir)
 
-
- /**
-  * <pre>
-  * This version of the adjacency structure uses maps and the underlying
-  * data structure to store both vertices and adjacency lists. Here the 
-  * lists are also maps.
-  * The main map:
-  * graphMap: mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]]
-  * Stores a vertex dynamically when it is first encountered. In this 
-  * implementation, vertices are not stored individually up front.
-  * They are stored as pairs of neighbor vertices. This implementation
-  * can be directed or undirected based on the biDir parameter.
-  * Input is of the following form:
-  * vertex, vertex, weight
-  * 
-  * example:
-  * Philadelphia, Pittsburgh,100
-  * Boston, New York,100
-  * Hartford, New York,100
-  * Los Angeles, San Diego,100
-  * 
-  * When the adjacency structure is first created, an empy graph
-  * is instatiated:
-  * new mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]]()
-  * 
-  * Note that the LinkedHashMap could just as well be HashMap.
-  * 
-  * vertex pairs are added by repeatedly calling:
-  * addEdge(vertex,vertex)
-  * Depending on whether the map is directed or undirected this
-  * call will make 1 or 2 map insertions respectively. 
-  * 
-  * @param <T> the vertex object
-  */
-private class GraphImpl[T](
+  /**
+   * <pre>
+   * This version of the adjacency structure uses maps and the underlying
+   * data structure to store both vertices and adjacency lists. Here the
+   * lists are also maps.
+   * The main map:
+   * graphMap: mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]]
+   * Stores a vertex dynamically when it is first encountered. In this
+   * implementation, vertices are not stored individually up front.
+   * They are stored as pairs of neighbor vertices. This implementation
+   * can be directed or undirected based on the biDir parameter.
+   * Input is of the following form:
+   * vertex, vertex, weight
+   *
+   * example:
+   * Philadelphia, Pittsburgh,100
+   * Boston, New York,100
+   * Hartford, New York,100
+   * Los Angeles, San Diego,100
+   *
+   * When the adjacency structure is first created, an empy graph
+   * is instatiated:
+   * new mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]]()
+   *
+   * Note that the LinkedHashMap could just as well be HashMap.
+   *
+   * vertex pairs are added by repeatedly calling:
+   * addEdge(vertex,vertex)
+   * Depending on whether the map is directed or undirected this
+   * call will make 1 or 2 map insertions respectively.
+   *
+   * @param <T> the vertex object
+   */
+  private class GraphImpl[T](
     private val biDir: GraphConstants.Value) extends Graph[T] {
 
     /** number of vertices in the graph **/
@@ -93,8 +93,8 @@ private class GraphImpl[T](
     private val graphMap: mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]] = new mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]]()
 
     /** DISPLAY DIRECTION **/
-    println("mapped adj " + biDir )
-    
+    println("mapped adj " + biDir)
+
     def addEdge(u: T, v: T): Unit = {
       /** if biDir then must update both as neighbors **/
       biDir match {
@@ -105,16 +105,16 @@ private class GraphImpl[T](
     /**
      * <pre>
      * Note the following inefficiency: The adjacency lists are represented as
-     * maps. The key and value of the map entry is simply a duplicate of the 
+     * maps. The key and value of the map entry is simply a duplicate of the
      * vertex being inserted. The vertex contains various information not known
      * by the adjacency structure, i.e. weight, color or any type of attribute.
      * This data is used by the client of the adjacency structure to perform
      * various types of graph processing. My current understanding of scala
-     * prevents me from adding a level of efficient processing that utilizes 
-     * the components of the vertex to store the mapping in a space-wise 
+     * prevents me from adding a level of efficient processing that utilizes
+     * the components of the vertex to store the mapping in a space-wise
      * efficient manner. For the sake of simplicity, I just store the vertex
      * as a key and value. I might change this later and put a default boolean
-     * as the value. 
+     * as the value.
      * </pre>
      */
     private def addMapping(u: T, v: T): Unit = {
@@ -125,7 +125,7 @@ private class GraphImpl[T](
         /** this is a new vertex, so update both edge count and vertex count **/
         numberVertices += 1
         numberEdges += 1
-        
+
         /** create a new hash map entry for the edge being inserted for this vertex **/
         val r = new mutable.LinkedHashMap[T, T]()
         /** add a key, value pair to this new hashmap of edges **/
@@ -163,7 +163,7 @@ private class GraphImpl[T](
       if (t == None) {
         /** only update the number of vertexies , since this is a on directional mapping only **/
         numberVertices += 1
-        val r = mutable.LinkedHashMap[T,T]()
+        val r = mutable.LinkedHashMap[T, T]()
         /** put an empty place holder for the one directional vertex **/
         graphMap += (v -> r)
       }
@@ -180,14 +180,14 @@ private class GraphImpl[T](
       addMapping(v, u)
     }
 
-    /* 
+    /*
      * <pre>
-     * This function simply scans the graphMap and prints out all the 
-     * vertices along with their associated list of neighbors 
+     * This function simply scans the graphMap and prints out all the
+     * vertices along with their associated list of neighbors
      * The first for comprehension retrieves each vertex,neighbor-list pair.
      * The second for comprehension retrieves each vertex from the neighbor-list.
      * </pre>
-     * 
+     *
      * @see org.geo.scala.graph.sedgewick.adjacency.Graph#printGraph()
      */
     def printGraph = {
@@ -204,29 +204,38 @@ private class GraphImpl[T](
       }
       println("\n...")
     }
-    
+
     def adj(v: T): Iterable[T] = {
       val a = graphMap get v
-      if ( a == None ) {
+      if (a == None) {
         Iterable.empty[T]
       } else {
-      a.get.values
+        a.get.values
+      }
+    }
+
+    def adjreverse(v: T): Iterable[T] = {
+      val a = graphMap get v
+      if (a == None) {
+        Iterable.empty[T]
+      } else {
+        a.get.values.toSeq.reverse.toIterable
       }
     }
 
     /**
-     * returns the number of vertices 
+     * returns the number of vertices
      * @see org.geo.scala.graph.undirected.Graph#V()
      */
     def V: Int = numberVertices
- 
+
     /**
      * returns the number of edges
      * @see org.geo.scala.graph.undirected.Graph#E()
      */
-    def E: Int =  {
-        biDir match {
-        case GraphConstants.undirected => numberEdges / 2 
+    def E: Int = {
+      biDir match {
+        case GraphConstants.undirected => numberEdges / 2
         case GraphConstants.directed   => numberEdges
       }
     }
