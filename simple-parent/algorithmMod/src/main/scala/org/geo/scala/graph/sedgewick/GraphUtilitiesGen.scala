@@ -30,6 +30,8 @@ object GraphUtilitiesGen {
   def CITIES_CYCLE = "city_cycle.txt"
   def CITIES = "cities.txt"
   def NUMBERS = "numbers.txt"
+  def TINYG = "tinyG.txt"
+
   def MEDIUMNUMBERS = "princetonMedium.txt"
   def TINYGC        = "tinyCG.txt"
   /**

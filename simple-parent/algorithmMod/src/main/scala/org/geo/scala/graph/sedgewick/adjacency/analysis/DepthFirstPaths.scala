@@ -43,7 +43,7 @@ object DepthFirstPaths {
         if (!hasPathTo(w)) {
           edgeTo(w) = v
           /** check the adjacent neighors of w **/
-          dfs(graph, w)
+          dfsRecursive(graph, w)
         }
       }
     }

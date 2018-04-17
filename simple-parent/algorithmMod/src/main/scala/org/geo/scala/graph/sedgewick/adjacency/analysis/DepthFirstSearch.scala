@@ -34,6 +34,7 @@ object DepthFirstSearch {
     private def DEBUG = true
     private def dfsRecursive(graph: Graph[T], v: T): Unit = {
       marked(v) = true
+      println("marked=%s".format(marked))
       /** count each connected vertex **/
       counter += 1
       /** get the adjacent neighbors of v **/
@@ -41,7 +42,7 @@ object DepthFirstSearch {
         /** if this neigbor has not been seen yet **/
         if ((marked get w) == None) {
           /** check the adjacent neighors of w **/
-          dfs(graph, w)
+          dfsRecursive(graph, w)
         }
       }
     }
