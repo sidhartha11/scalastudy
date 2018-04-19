@@ -48,334 +48,335 @@ import org.geo.scala.graph.GraphVertex
  *
  *
  */
-object GlobalTestRunner {
-
-  /**
-   * Test Files Used
-   *  princetonLarge ( over 7meg )
-   *  princetonMedium.txt ( 400K records )
-   *  city.txt  small file of different cities
-   */
-  def direction = GraphConstants.undirected
-  // def nodeToAnalyze="Montclair NJ"
-  def nodeToAnalyze = "Death Valley"
-  def showTrace = true
-  def filename = "city_cycle.txt"
-  // def filename = "numbers.txt"
-
-  /** TEST finding cycle in graph**/
-  def testCycleBUForMAP = {
-    /** create a graph object **/
-    val a = GraphUtilities.initializeGraph(filename, direction)
-
-    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-
-    println("running cycle test")
-    val start = System.currentTimeMillis()
-
-    val cc = MAP.Cycle(a)
-    //  val cc = BUF.ConnectedComponents(a)
-    /** get the number of connected components **/
-    val m = cc.count
-    /**
-     * Create a map of Int,Queue associations where each Int
-     * is a pointer to a Queue of vertices representing
-     * connected components
-     */
-    val components = mutable.Map[Int, mutable.Queue[GraphVertex]]()
-
-    /**
-     * traverse thru all known vertices, locate the Integer
-     * representing their connected components id,
-     * if the queue for the component is not currently in the map,
-     * put it there.
-     * put the current vertex into the queue for that component,
-     */
-
-    for ((v, l) <- a.getGraph) {
-      val comp = components get (cc.iD(v))
-      if (comp == None) {
-        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
-        queue += v
-        components += (cc.iD(v) -> queue)
-      } else {
-        comp.get += v
-      }
-    }
-
-    /** scan thru the components Map and print out the contents **/
-    for ((c_id, q) <- components) {
-      print("component id:" + c_id + "\n    ")
-      for (queue_item <- q) {
-        print(queue_item + " : ")
-      }
-      println()
-    }
-
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-    
-    println("Cycle Detected:%b".format(cc.isCyclic))
-
-  }
-  
-    /** TEST finding cycle in graph**/
-  def testTwoColorBUForMAP = {
-    /** create a graph object **/
-    val a = GraphUtilities.initializeGraph(filename, direction)
-
-    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-
-    println("running TwoColor test")
-    val start = System.currentTimeMillis()
-
-    val cc = MAP.TwoColor(a)
-    /** get the number of connected components **/
-    val m = cc.count
-    /**
-     * Create a map of Int,Queue associations where each Int
-     * is a pointer to a Queue of vertices representing
-     * connected components
-     */
-    val components = mutable.Map[Int, mutable.Queue[GraphVertex]]()
-
-    /**
-     * traverse thru all known vertices, locate the Integer
-     * representing their connected components id,
-     * if the queue for the component is not currently in the map,
-     * put it there.
-     * put the current vertex into the queue for that component,
-     */
-
-    for ((v, l) <- a.getGraph) {
-      val comp = components get (cc.iD(v))
-      if (comp == None) {
-        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
-        queue += v
-        components += (cc.iD(v) -> queue)
-      } else {
-        comp.get += v
-      }
-    }
-
-    /** scan thru the components Map and print out the contents **/
-    for ((c_id, q) <- components) {
-      print("component id:" + c_id + "\n    ")
-      for (queue_item <- q) {
-        print(queue_item + " : ")
-      }
-      println()
-    }
-
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-    
-    println("isBipartite Detected:%b".format(cc.isBipartite))
-
-  }
-  /** TEST Connected Components  algorithm **/
-  def testConnectedBUForMAP = {
-    /** create a graph object **/
-    val a = GraphUtilities.initializeGraph(filename, direction)
-
-    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-
-    println("running connected components test")
-    val start = System.currentTimeMillis()
-
-    val cc = MAP.ConnectedComponents(a)
-    /** get the number of connected components **/
-    val m = cc.count
-    /**
-     * Create a map of Int,Queue associations where each Int
-     * is a pointer to a Queue of vertices representing
-     * connected components
-     */
-    val components = mutable.Map[Int, mutable.Queue[GraphVertex]]()
-
-    /**
-     * traverse thru all known vertices, locate the Integer
-     * representing their connected components id,
-     * if the queue for the component is not currently in the map,
-     * put it there.
-     * put the current vertex into the queue for that component,
-     */
-
-    for ((v, l) <- a.getGraph) {
-      val comp = components get (cc.iD(v))
-      if (comp == None) {
-        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
-        queue += v
-        components += (cc.iD(v) -> queue)
-      } else {
-        comp.get += v
-      }
-    }
-
-    /** scan thru the components Map and print out the contents **/
-    for ((c_id, q) <- components) {
-      print("component id:" + c_id + "\n    ")
-      for (queue_item <- q) {
-        print(queue_item + " : ")
-      }
-      println()
-    }
-
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-
-  }
-  
-  
-
-
-  /** MAPPED BASED **/
-  /** TEST DFS algorithm **/
-  def testDFSMAP = {
-    /** create a graph object **/
-    val a = GraphUtilities.initializeGraph(filename, direction)
-    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-    val s = GraphVertex(nodeToAnalyze, 100, true)
-    val start = System.currentTimeMillis()
-    val search = MAP.Search(a, s)
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-
-    println("showing paths to " + s)
-    println("\nshow paths of each vertex:")
-    for (v <- a.getGraph) {
-
-      if (search.hasPathTo(v._1)) {
-        print(s + " to " + v._1 + ":")
-        val path = search.pathTo(v._1)
-        //        println("searching path:" + path)
-        for (x <- path) {
-          if (x == s)
-            print(x)
-          else
-            print("-" + x)
-        }
-        println()
-      }
-    }
-  }
-
-  /** TEST Breadth First Search **/
-  def testBFSMAP = {
-    /** create a graph object **/
-    val a = GraphUtilities.initializeGraph(filename, direction)
-    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-    val s = GraphVertex(nodeToAnalyze, 100, true)
-    val start = System.currentTimeMillis()
-    val search = MAP.BreadthFirstPaths(a, s)
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-
-    println("showing paths to " + s)
-    println("\nshow paths of each vertex:")
-    for (v <- a.getGraph) {
-
-      if (search.hasPathTo(v._1)) {
-        print(s + " to " + v._1 + ":")
-        val path = search.pathTo(v._1)
-        //        println("searching path:" + path)
-        for (x <- path) {
-          if (x == s)
-            print(x)
-          else
-            print("-" + x)
-        }
-        println()
-      }
-    }
-  }
-
-  def testBFSMAPLarge(filename: String,nodeToAnalyze: String,direction: GraphConstants.Value) = {
-    /** create a graph object **/
-    println("running BFS using Map Adjacent Structure,%s,%s,%s".format(filename,nodeToAnalyze,direction))
-    
-    val a = GraphUtilities.initializeGraph("C:\\temp\\", filename, direction)
-    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
-    if (showTrace) {
-      println("\nprinting graph via printGraph")
-      a.printGraph
-      println("\nprint contents of  map")
-      for (v <- a.getGraph) {
-        println(v._1 + ":" + a.adj(v._1))
-      }
-    }
-    val s = GraphVertex(nodeToAnalyze, 100, true)
-    val start = System.currentTimeMillis()
-    val search = MAP.BreadthFirstPaths(a, s)
-    val end = System.currentTimeMillis()
-    println("elapsed:%d".format((end - start)))
-
-    println("showing paths to " + s)
-    println("\nshow paths of each vertex:")
-    for (v <- a.getGraph) {
-
-      if (search.hasPathTo(v._1)) {
-        print(s + " to " + v._1 + ":")
-        val path = search.pathTo(v._1)
-        //        println("searching path:" + path)
-        for (x <- path) {
-          if (x == s)
-            print(x)
-          else
-            print("-" + x)
-        }
-        println()
-      }
-    }
-  }
-  /**
-   * MAIN testing entrance point
-   */
-  def main(args: Array[String]) {
-//    testBFSMAP
-    testBFSMAPLarge("princetonMedium.txt","997538",GraphConstants.undirected)
-//    testConnectedBUForMAP
-//    testCycleBUForMAP
-//   testTwoColorBUForMAP
-  }
-}
+//object GlobalTestRunner 
+//{
+//
+//  /**
+//   * Test Files Used
+//   *  princetonLarge ( over 7meg )
+//   *  princetonMedium.txt ( 400K records )
+//   *  city.txt  small file of different cities
+//   */
+//  def direction = GraphConstants.undirected
+//  // def nodeToAnalyze="Montclair NJ"
+//  def nodeToAnalyze = "Death Valley"
+//  def showTrace = true
+//  def filename = "city_cycle.txt"
+//  // def filename = "numbers.txt"
+//
+//  /** TEST finding cycle in graph**/
+//  def testCycleBUForMAP = {
+//    /** create a graph object **/
+//    val a = GraphUtilities.initializeGraph(filename, direction)
+//
+//    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
+//    if (showTrace) {
+//      println("\nprinting graph via printGraph")
+//      a.printGraph
+//      println("\nprint contents of  map")
+//      for (v <- a.getGraph) {
+//        println(v._1 + ":" + a.adj(v._1))
+//      }
+//    }
+//
+//    println("running cycle test")
+//    val start = System.currentTimeMillis()
+//
+//    val cc = MAP.Cycle(a)
+//    //  val cc = BUF.ConnectedComponents(a)
+//    /** get the number of connected components **/
+//    val m = cc.count
+//    /**
+//     * Create a map of Int,Queue associations where each Int
+//     * is a pointer to a Queue of vertices representing
+//     * connected components
+//     */
+//    val components = mutable.Map[Int, mutable.Queue[GraphVertex]]()
+//
+//    /**
+//     * traverse thru all known vertices, locate the Integer
+//     * representing their connected components id,
+//     * if the queue for the component is not currently in the map,
+//     * put it there.
+//     * put the current vertex into the queue for that component,
+//     */
+//
+//    for ((v, l) <- a.getGraph) {
+//      val comp = components get (cc.iD(v))
+//      if (comp == None) {
+//        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
+//        queue += v
+//        components += (cc.iD(v) -> queue)
+//      } else {
+//        comp.get += v
+//      }
+//    }
+//
+//    /** scan thru the components Map and print out the contents **/
+//    for ((c_id, q) <- components) {
+//      print("component id:" + c_id + "\n    ")
+//      for (queue_item <- q) {
+//        print(queue_item + " : ")
+//      }
+//      println()
+//    }
+//
+//    val end = System.currentTimeMillis()
+//    println("elapsed:%d".format((end - start)))
+//    
+//    println("Cycle Detected:%b".format(cc.isCyclic))
+//
+//  }
+//  
+//    /** TEST finding cycle in graph**/
+//  def testTwoColorBUForMAP = {
+//    /** create a graph object **/
+//    val a = GraphUtilities.initializeGraph(filename, direction)
+//
+//    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
+//    if (showTrace) {
+//      println("\nprinting graph via printGraph")
+//      a.printGraph
+//      println("\nprint contents of  map")
+//      for (v <- a.getGraph) {
+//        println(v._1 + ":" + a.adj(v._1))
+//      }
+//    }
+//
+//    println("running TwoColor test")
+//    val start = System.currentTimeMillis()
+//
+//    val cc = MAP.TwoColor(a)
+//    /** get the number of connected components **/
+//    val m = cc.count
+//    /**
+//     * Create a map of Int,Queue associations where each Int
+//     * is a pointer to a Queue of vertices representing
+//     * connected components
+//     */
+//    val components = mutable.Map[Int, mutable.Queue[GraphVertex]]()
+//
+//    /**
+//     * traverse thru all known vertices, locate the Integer
+//     * representing their connected components id,
+//     * if the queue for the component is not currently in the map,
+//     * put it there.
+//     * put the current vertex into the queue for that component,
+//     */
+//
+//    for ((v, l) <- a.getGraph) {
+//      val comp = components get (cc.iD(v))
+//      if (comp == None) {
+//        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
+//        queue += v
+//        components += (cc.iD(v) -> queue)
+//      } else {
+//        comp.get += v
+//      }
+//    }
+//
+//    /** scan thru the components Map and print out the contents **/
+//    for ((c_id, q) <- components) {
+//      print("component id:" + c_id + "\n    ")
+//      for (queue_item <- q) {
+//        print(queue_item + " : ")
+//      }
+//      println()
+//    }
+//
+//    val end = System.currentTimeMillis()
+//    println("elapsed:%d".format((end - start)))
+//    
+//    println("isBipartite Detected:%b".format(cc.isBipartite))
+//
+//  }
+//  /** TEST Connected Components  algorithm **/
+//  def testConnectedBUForMAP = {
+//    /** create a graph object **/
+//    val a = GraphUtilities.initializeGraph(filename, direction)
+//
+//    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
+//    if (showTrace) {
+//      println("\nprinting graph via printGraph")
+//      a.printGraph
+//      println("\nprint contents of  map")
+//      for (v <- a.getGraph) {
+//        println(v._1 + ":" + a.adj(v._1))
+//      }
+//    }
+//
+//    println("running connected components test")
+//    val start = System.currentTimeMillis()
+//
+//    val cc = MAP.ConnectedComponents(a)
+//    /** get the number of connected components **/
+//    val m = cc.count
+//    /**
+//     * Create a map of Int,Queue associations where each Int
+//     * is a pointer to a Queue of vertices representing
+//     * connected components
+//     */
+//    val components = mutable.Map[Int, mutable.Queue[GraphVertex]]()
+//
+//    /**
+//     * traverse thru all known vertices, locate the Integer
+//     * representing their connected components id,
+//     * if the queue for the component is not currently in the map,
+//     * put it there.
+//     * put the current vertex into the queue for that component,
+//     */
+//
+//    for ((v, l) <- a.getGraph) {
+//      val comp = components get (cc.iD(v))
+//      if (comp == None) {
+//        val queue: mutable.Queue[GraphVertex] = new mutable.Queue[GraphVertex]()
+//        queue += v
+//        components += (cc.iD(v) -> queue)
+//      } else {
+//        comp.get += v
+//      }
+//    }
+//
+//    /** scan thru the components Map and print out the contents **/
+//    for ((c_id, q) <- components) {
+//      print("component id:" + c_id + "\n    ")
+//      for (queue_item <- q) {
+//        print(queue_item + " : ")
+//      }
+//      println()
+//    }
+//
+//    val end = System.currentTimeMillis()
+//    println("elapsed:%d".format((end - start)))
+//
+//  }
+//  
+//  
+//
+//
+//  /** MAPPED BASED **/
+//  /** TEST DFS algorithm **/
+//  def testDFSMAP = {
+//    /** create a graph object **/
+//    val a = GraphUtilities.initializeGraph(filename, direction)
+//    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
+//    if (showTrace) {
+//      println("\nprinting graph via printGraph")
+//      a.printGraph
+//      println("\nprint contents of  map")
+//      for (v <- a.getGraph) {
+//        println(v._1 + ":" + a.adj(v._1))
+//      }
+//    }
+//    val s = GraphVertex(nodeToAnalyze, 100, true)
+//    val start = System.currentTimeMillis()
+//    val search = MAP.Search(a, s)
+//    val end = System.currentTimeMillis()
+//    println("elapsed:%d".format((end - start)))
+//
+//    println("showing paths to " + s)
+//    println("\nshow paths of each vertex:")
+//    for (v <- a.getGraph) {
+//
+//      if (search.hasPathTo(v._1)) {
+//        print(s + " to " + v._1 + ":")
+//        val path = search.pathTo(v._1)
+//        //        println("searching path:" + path)
+//        for (x <- path) {
+//          if (x == s)
+//            print(x)
+//          else
+//            print("-" + x)
+//        }
+//        println()
+//      }
+//    }
+//  }
+//
+//  /** TEST Breadth First Search **/
+//  def testBFSMAP = {
+//    /** create a graph object **/
+//    val a = GraphUtilities.initializeGraph(filename, direction)
+//    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
+//    if (showTrace) {
+//      println("\nprinting graph via printGraph")
+//      a.printGraph
+//      println("\nprint contents of  map")
+//      for (v <- a.getGraph) {
+//        println(v._1 + ":" + a.adj(v._1))
+//      }
+//    }
+//    val s = GraphVertex(nodeToAnalyze, 100, true)
+//    val start = System.currentTimeMillis()
+//    val search = MAP.BreadthFirstPaths(a, s)
+//    val end = System.currentTimeMillis()
+//    println("elapsed:%d".format((end - start)))
+//
+//    println("showing paths to " + s)
+//    println("\nshow paths of each vertex:")
+//    for (v <- a.getGraph) {
+//
+//      if (search.hasPathTo(v._1)) {
+//        print(s + " to " + v._1 + ":")
+//        val path = search.pathTo(v._1)
+//        //        println("searching path:" + path)
+//        for (x <- path) {
+//          if (x == s)
+//            print(x)
+//          else
+//            print("-" + x)
+//        }
+//        println()
+//      }
+//    }
+//  }
+//
+//  def testBFSMAPLarge(filename: String,nodeToAnalyze: String,direction: GraphConstants.Value) = {
+//    /** create a graph object **/
+//    println("running BFS using Map Adjacent Structure,%s,%s,%s".format(filename,nodeToAnalyze,direction))
+//    
+//    val a = GraphUtilities.initializeGraph("C:\\temp\\", filename, direction)
+//    println("\nGraphUtilities.maxDegree of a is %d".format(GraphUtilities.maxDegree(a)))
+//    if (showTrace) {
+//      println("\nprinting graph via printGraph")
+//      a.printGraph
+//      println("\nprint contents of  map")
+//      for (v <- a.getGraph) {
+//        println(v._1 + ":" + a.adj(v._1))
+//      }
+//    }
+//    val s = GraphVertex(nodeToAnalyze, 100, true)
+//    val start = System.currentTimeMillis()
+//    val search = MAP.BreadthFirstPaths(a, s)
+//    val end = System.currentTimeMillis()
+//    println("elapsed:%d".format((end - start)))
+//
+//    println("showing paths to " + s)
+//    println("\nshow paths of each vertex:")
+//    for (v <- a.getGraph) {
+//
+//      if (search.hasPathTo(v._1)) {
+//        print(s + " to " + v._1 + ":")
+//        val path = search.pathTo(v._1)
+//        //        println("searching path:" + path)
+//        for (x <- path) {
+//          if (x == s)
+//            print(x)
+//          else
+//            print("-" + x)
+//        }
+//        println()
+//      }
+//    }
+//  }
+//  /**
+//   * MAIN testing entrance point
+//   */
+//  def main(args: Array[String]) {
+////    testBFSMAP
+//    testBFSMAPLarge("princetonMedium.txt","997538",GraphConstants.undirected)
+////    testConnectedBUForMAP
+////    testCycleBUForMAP
+////   testTwoColorBUForMAP
+//  }
+// }

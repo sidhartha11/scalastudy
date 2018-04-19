@@ -34,6 +34,19 @@ object DepthFirstPaths {
      *         private implementations
      */
     private def DEBUG = true
+    
+    /**
+     * Two versions of a depth first search of a graph used 
+     * to determine the path between a source and destination 
+     * vertex in a graph. This works with both undirected and 
+     * directed graphs. This version deviates from the classical
+     * versions given in most texts in that it uses a HashMap to 
+     * store both vertices and adjacency lists. 
+     * 
+     * @see https://github.com/sidhartha11/scalastudy
+     */
+    
+    /** RECURSIVE VERSION **/
     private def dfsRecursive(graph: Graph[T], v: T): Unit = {
       marked(v) = true
       /** count each connected vertex **/
@@ -49,17 +62,16 @@ object DepthFirstPaths {
       }
     }
 
+    /** ITERATIVE VERSION **/
     private def dfs(graph: Graph[T], v: T): Unit = {
       val stack = mutable.Stack[T]()
       /** push the first element onto the stack **/
       stack.push(v)
-     
       while (!stack.isEmpty) {
         val s = stack.pop()
         if (!hasPathTo(s)) {
           counter += 1
           marked(s) = true
-
           /** get all the adjacent vertices of s **/
           /** push each one that is not marked onto the stack **/
           for (w <- graph.adj(s)) {
