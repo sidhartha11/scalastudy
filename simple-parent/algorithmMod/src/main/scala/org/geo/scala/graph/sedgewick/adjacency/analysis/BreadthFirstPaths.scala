@@ -39,7 +39,7 @@ object BreadthFirstPaths {
 
     /** private implementations **/
 
-    private def DEBUG = true
+    private def DEBUG = false
 
     /**
      * Following is the list of methods/functions in BreadthFirstPathsImpl Implementation
