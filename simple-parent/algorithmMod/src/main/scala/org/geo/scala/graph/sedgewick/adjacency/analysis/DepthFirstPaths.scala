@@ -6,6 +6,9 @@ import org.geo.scala.graph.sedgewick.GraphUtilities._
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import org.geo.scala.graph.GraphConstants
 
+import scala.annotation.tailrec
+
+
 trait DepthFirstPaths[T] {
   /** find all paths from source s **/
   def process(t: GraphConstants.Value)(s: T): Unit
@@ -30,10 +33,19 @@ object DepthFirstPaths {
     /** count of all vertices connected to input vertex s **/
     var counter = 0
 
+    var dcounter = 0 /** used for tracing and debugging **/
+    var start = 0l    /** used for tracing and debugging **/
     /**
      *         private implementations
      */
-    private def DEBUG = true
+    private def DEBUG = false
+
+
+    /**
+     *         private implementations
+     */
+
+
     
     /**
      * Two versions of a depth first search of a graph used 
@@ -47,11 +59,19 @@ object DepthFirstPaths {
      */
     
     /** RECURSIVE VERSION **/
+
+    // @tailrec
+
+
     private def dfsRecursive(graph: Graph[T], v: T): Unit = {
       marked(v) = true
       /** count each connected vertex **/
       counter += 1
       /** get the adjacent neighbors of v **/
+
+//      for (w <- graph.adjreverse(v)) {
+
+
       for (w <- graph.adjreverse(v)) {
         /** if this neigbor has not been seen yet **/
         if (!hasPathTo(w)) {
@@ -103,6 +123,13 @@ object DepthFirstPaths {
     }
 
     def pathTo(v: T, s: T): Iterable[T] = {
+
+      if ( DEBUG ) {
+      start = System.currentTimeMillis()
+      dcounter += 1
+      println("%d:%d:finding path from %s to %s".format(edgeTo.size,dcounter,s,v))
+      }
+
       if (!hasPathTo(v)) {
         Iterable.empty[T]
       } else {
@@ -116,6 +143,13 @@ object DepthFirstPaths {
         }
         /** commented out **/
         // s +=: path
+
+        if ( DEBUG ) {
+        println("elapsed time:%d".format((System.currentTimeMillis() - start)/1000))
+        println("buffer size returning:%d".format(path.size))
+        }
+        
+
         path
       }
     }

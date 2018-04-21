@@ -33,6 +33,7 @@ object GraphUtilitiesGen {
   def TINYG = "tinyG.txt"
 
   def MEDIUMNUMBERS = "princetonMedium.txt"
+  def PRINCETONLARGE = "princetonLarge.txt"
   def TINYGC        = "tinyCG.txt"
   /**
    * This method is used to read a list of graph data
@@ -202,7 +203,7 @@ object GraphUtilitiesGen {
     println("read #" + counter + " records")
     list
   }
-  def DEBUG = true
+  def DEBUG = false
   def outPut(str: String) = {
     if (DEBUG) {
       println(str)
@@ -215,6 +216,7 @@ object GraphUtilitiesGen {
   def instantiateGraph[T, W](filename: String) = {
     println("creating adjacency structure")
     var adj = createAdjacencyMap[T, W](GraphConstants.undirected)
+    if (DEBUG)
     outPut("adj=%s".format(adj))
     /**
      * load the structure with data
@@ -222,5 +224,7 @@ object GraphUtilitiesGen {
     adj = loadGraph[T, W](base, filename, adj)
     adj
   }
-
+  def elapsed(start: Long): Long = {
+    (System.currentTimeMillis() - start)/1000
+  }
 }
