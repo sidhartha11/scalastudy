@@ -58,7 +58,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[Int, Int]("C:\\temp\\", MEDIUMNUMBERS, adj)
+    adj = loadGraph[Int, Int](",")("C:\\temp\\", MEDIUMNUMBERS, adj)
 
     /** display the vertex map: Map(vertex , adjacency map ) **/
     for (v <- adj.getGraph) {
@@ -74,7 +74,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[String, Int](base, CITIES, adj)
+    adj = loadGraph[String, Int](",")(base, CITIES, adj)
 
     /** display the vertex map: Map(vertex , adjacency map ) **/
     for (v <- adj.getGraph) {
@@ -98,7 +98,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[Int, Int](base, NUMBERS, adj)
+    adj = loadGraph[Int, Int](",")(base, NUMBERS, adj)
 
     /**
      * Get the degree of each vertex in the
@@ -128,7 +128,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[String, Int](base, CITIES, adj)
+    adj = loadGraph[String, Int](",")(base, CITIES, adj)
 
     /**
      * Get the degree of each vertex in the

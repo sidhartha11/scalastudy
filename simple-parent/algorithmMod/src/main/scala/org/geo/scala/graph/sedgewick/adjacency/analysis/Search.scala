@@ -2,7 +2,7 @@ package org.geo.scala.graph.sedgewick.adjacency
 
 import scala.collection.mutable
 import java.util.Stack
-import org.geo.scala.graph.sedgewick.GraphUtilities._
+import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
 
 trait Search[T] {
   def count: Int // how many vertices are connected to s?
