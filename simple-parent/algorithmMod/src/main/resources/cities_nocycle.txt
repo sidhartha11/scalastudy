@@ -1,0 +1,6 @@
+Philadelphia, Pittsburgh,100
+Boston, New York,100
+Hartford, New York,100
+IOWA, New York, 100
+New York, Delaware, 100
+Delaware, IOWA, 100

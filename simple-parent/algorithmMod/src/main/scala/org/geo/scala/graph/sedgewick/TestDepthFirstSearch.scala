@@ -9,10 +9,10 @@ import org.geo.scala.graph.sedgewick.adjacency.analysis.DepthFirstSearch
 object TestDepthFirstSearch {
 
   def DEBUG=false
-  def test(id: String, tyP: GraphConstants.Value) {
+  def test(id: String, tyP: GraphConstants.Value,delim: String,filename: String) {
     println("testing:%s".format(tyP))
         /** create an adjacency object **/
-    val adj = instantiateGraph[String,Int](",")(NUMBERS)
+    val adj = instantiateGraph[String,Int](delim)(filename)
     if ( DEBUG ) {
     outPut(adj.toString())
     }
@@ -64,12 +64,13 @@ object TestDepthFirstSearch {
   }
   
   def main(args: Array[String]) {
-    test("0",GraphConstants.non_recursive)
+    test("0",GraphConstants.non_recursive,",",NUMBERS)
 //     test("0",GraphConstants.recursive)
     
 //    test("9",GraphConstants.non_recursive)
-    test("9",GraphConstants.recursive)
+    test("9",GraphConstants.recursive,",",NUMBERS)
     
+    test("Lexington, New York",GraphConstants.non_recursive,"|",SYNTHETICCITIES)
 //    testTrace("0",GraphConstants.recursive)
   }
 }

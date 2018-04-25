@@ -3,7 +3,6 @@ package org.geo.scala.graph.sedgewick
 import scala.io.Source
 import scala.collection.mutable
 import org.geo.scala.graph.GraphVertexGen
-import org.geo.scala.graph.GlobalUtilities.syntheticData
 import org.geo.scala.graph.GraphConstants
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import sys.process._
@@ -17,6 +16,11 @@ import scala.collection.mutable.ArrayBuffer
  * So far I have 2 types: Map and Buffer
  */
 object GraphUtilitiesGen {
+
+  implicit class OpsNum(val str: String) extends AnyVal {
+    def isNumeric() = scala.util.Try(str.toDouble).isSuccess
+  }
+
   def requireVertexInGraph[T](graph: Graph[T], v: T): Boolean = {
     val t = graph.getGraph get v
     t != None
@@ -28,9 +32,11 @@ object GraphUtilitiesGen {
       |/src/main
       |/resources/
       """.stripMargin.replaceAll("\n", "")
-  def DEBUG=false
+  def DEBUG = false
   def filename = "cities.txt"
+  def CITIES_NOCYCLE = "cities_nocycle.txt"
   def CITIES_CYCLE = "city_cycle.txt"
+  def TWOCOLOR = "twocolor.txt"
   def CITIES = "cities.txt"
   def NUMBERS = "numbers.txt"
   def TINYG = "tinyG.txt"
@@ -55,8 +61,16 @@ object GraphUtilitiesGen {
       if (t.size != 3) {
         println("skipping , 3 elements required, v delim v delim wt" + line)
       } else {
+        /**
+         * simple syntax check making sure the the third
+         * field is numeric
+         */
+        if ( t(2) isNumeric() ) {
         buffer += ((t(0).trim.asInstanceOf[T], t(1).trim.asInstanceOf[T], t(2).trim.asInstanceOf[W]))
-      }
+        } else {
+          println("skipped, 3rd field not numeric")
+        }
+        }
     }
     buffer
   }
@@ -173,10 +187,6 @@ object GraphUtilitiesGen {
     loadGraphInner[T, W](delem)(base.trim() + filename, a)
   }
 
-  def loadGraphRandom[T, W](base: String, filename: String, a: Graph[GraphVertexGen[T, W]]): Graph[GraphVertexGen[T, W]] = {
-    loadGraphInnerRandom[T, W](base.trim() + filename, a)
-  }
-
   def loadGraphInner[T, W](delem: String)(filename: String, a: Graph[GraphVertexGen[T, W]]): Graph[GraphVertexGen[T, W]] = {
 
     /**
@@ -188,7 +198,7 @@ object GraphUtilitiesGen {
     for ((node: T, neighbor: T, weight: W) <- readGraph[T, W](delem)(filename)) {
       counter += 1
       if (DEBUG) {
-      println("adding:(%s,%s,%s)".format(node, neighbor, weight))
+        println("adding:(%s,%s,%s)".format(node, neighbor, weight))
       }
       a.addEdge(GraphVertexGen[T, W](node, weight), GraphVertexGen[T, W](neighbor, weight))
     }
@@ -196,22 +206,7 @@ object GraphUtilitiesGen {
     a
   }
 
-  def loadGraphInnerRandom[T, W](filename: String, a: Graph[GraphVertexGen[T, W]]): Graph[GraphVertexGen[T, W]] = {
 
-    /**
-     * Populate the graph with data from input file
-     */
-    println("adding nodes")
-    var counter = 0
-    var skipped = 0
-    for ((node, neighbor, weight) <- syntheticData[T, W](filename)) {
-      counter += 1
-      //        println("adding:(%s,%s,%d)".format(node, neighbor, weight))
-      a.addEdge(GraphVertexGen[T, W](node, weight), GraphVertexGen[T, W](neighbor, weight))
-    }
-    println("read #" + counter + " records")
-    a
-  }
 
   /** utilities that load the vertices into a list only, for testing equals and compare functionality **/
   def loadGraph[T, W](base: String, filename: String): mutable.ArrayBuffer[GraphVertexGen[T, W]] = {
@@ -255,18 +250,6 @@ object GraphUtilitiesGen {
      * load the structure with data
      */
     adj = loadGraph[T, W](delem)(base, filename, adj)
-    adj
-  }
-
-  def instantiateGraphRandom[T, W](filename: String) = {
-    println("creating adjacency structure")
-    var adj = createAdjacencyMap[T, W](GraphConstants.undirected)
-    if (DEBUG)
-      outPut("adj=%s".format(adj))
-    /**
-     * load the structure with data
-     */
-    adj = loadGraphRandom[T, W](base, filename, adj)
     adj
   }
 

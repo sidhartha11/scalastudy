@@ -1,7 +1,6 @@
 package org.geo.scala.graph.sedgewick.adjacency
 
 import scala.collection.mutable
-import org.geo.scala.graph.GlobalUtilities._
 import org.geo.scala.graph.GraphConstants
 
 /**

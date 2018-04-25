@@ -71,7 +71,7 @@ object BreadthFirstPaths {
     def hasPathTo(v: T): Boolean = {
       val t = marked get v
       if (t == None) false
-      else true
+      else t get
     }
 
     def pathTo(v: T, s: T): Iterable[T] = {

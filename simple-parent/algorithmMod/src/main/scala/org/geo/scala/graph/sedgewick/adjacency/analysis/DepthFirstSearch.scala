@@ -7,6 +7,7 @@ import org.geo.scala.graph.sedgewick.adjacency.Graph
 import org.geo.scala.graph.GraphConstants
 
 trait DepthFirstSearch[T] {
+
   def process(t: GraphConstants.Value)(v: T): Unit // process input vertex
   def count: Int // how many vertices are connected to s?
   def marked(v: T): Boolean // is v connected to a source vertex
@@ -14,6 +15,7 @@ trait DepthFirstSearch[T] {
 }
 
 object DepthFirstSearch {
+  def DEBUG = false
   def apply[T](graph: Graph[T]): DepthFirstSearch[T] =
     new DepthFirstSearchImpl[T](graph)
 
@@ -31,10 +33,11 @@ object DepthFirstSearch {
     /**
      *         private implementations
      */
-    private def DEBUG = true
     private def dfsRecursive(graph: Graph[T], v: T): Unit = {
       marked(v) = true
+      if ( DEBUG ) {
       println("marked=%s".format(marked))
+      }
       /** count each connected vertex **/
       counter += 1
       /** get the adjacent neighbors of v **/
@@ -83,7 +86,7 @@ object DepthFirstSearch {
     def marked(v: T): Boolean = {
       val t = marked get v
       if (t == None) false
-      else true
+      else t get
     }
 
     def process(recurType: GraphConstants.Value)(s: T): Unit = {
