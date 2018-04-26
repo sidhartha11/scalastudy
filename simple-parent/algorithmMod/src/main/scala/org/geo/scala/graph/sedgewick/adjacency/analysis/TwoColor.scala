@@ -113,7 +113,7 @@ object TwoColor {
 }
 
 object runner3 extends App {
-  val graph = instantiateGraph[String, Int](",")(TWOCOLOR)
+  val graph = instantiateGraph[String, Int]("|")("kevinbacon.txt")
   val twoColor = TwoColor(graph)
   twoColor.process(GraphConstants.recursive)
   println("isBipartite %b".format(twoColor.isBipartite))

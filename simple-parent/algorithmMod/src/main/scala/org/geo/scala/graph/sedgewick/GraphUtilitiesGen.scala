@@ -210,10 +210,14 @@ object GraphUtilitiesGen {
   def createAdjacencyMap[T, W](dir: GraphConstants.Value) = {
     Graph[GraphVertexGen[T, W]](dir)
   }
+  /** for created the default digraph **/
+  def createAdjacencyMap[T, W]() = {
+    Graph[GraphVertexGen[T, W]]()
+  }
 
-  def instantiateGraph[T, W](delem: String)(filename: String) = {
-    println("creating adjacency structure")
-    var adj = createAdjacencyMap[T, W](GraphConstants.undirected)
+  def instantiateGraph[T, W](delem: String)(filename: String,dir: GraphConstants.Value=GraphConstants.undirected) = {
+    println("creating adjacency structure:" + dir)
+    var adj = createAdjacencyMap[T, W](dir)
     if (DEBUG)
       outPut("adj=%s".format(adj))
     /**

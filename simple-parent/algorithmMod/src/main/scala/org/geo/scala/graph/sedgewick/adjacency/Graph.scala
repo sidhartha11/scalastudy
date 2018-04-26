@@ -1,6 +1,7 @@
 package org.geo.scala.graph.sedgewick.adjacency
 
 import scala.collection.mutable
+
 import org.geo.scala.graph.GraphConstants
 
 /**
@@ -33,6 +34,7 @@ trait Graph[T] {
   def E: Int // number edges
   def printGraph: Unit // print the contents of graph
   def getGraph: mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]]
+  def reverseGraph: Graph[T]
 }
 
 /**
@@ -43,10 +45,14 @@ trait Graph[T] {
  * The actual implementation of the adjacency structure is private inside
  * the companion object:
  * private class GraphImpl[T]
+ * 
+ * The apply method of the companion object will create a digraph by default as 
+ * per the default parameter:
+ * apply[T](biDir: GraphConstants.Value = GraphConstants.directed)
  *
  */
 object Graph {
-  def apply[T](biDir: GraphConstants.Value): Graph[T] =
+  def apply[T](biDir: GraphConstants.Value = GraphConstants.directed): Graph[T] =
     new GraphImpl[T](biDir)
 
   /**
@@ -242,5 +248,27 @@ object Graph {
     override def toString = "Graph:" + graphMap.mkString("[", ",", "]")
 
     def getGraph: mutable.LinkedHashMap[T, mutable.LinkedHashMap[T, T]] = graphMap
+    
+    /**
+     * The simple matter of reversing a digraph is to just 
+     * added the vertices of the current graph in reverse order.
+     * The restriction here is that this must only be applied to 
+     * a directed graph and not a undirected graph.
+     * @throws This method will throw an illegalaccess exception if you 
+     * attempt to reverse a graph that is not a digraph. 
+     */
+    def reverseGraph: Graph[T] = {
+      biDir match {
+        case GraphConstants.directed => 
+        case _ => throw new IllegalAccessException("Only can reverse digraph")
+      }
+      val revGraph:Graph[T] = Graph[T]()
+      for ( (k,v) <- getGraph ) {
+        for ( (k1,v1 ) <- v ) {
+          revGraph.addEdge(v1,k) 
+        }
+      }
+      revGraph
+    }
   }
 }

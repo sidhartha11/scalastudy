@@ -371,7 +371,7 @@ object TestBreathFirstPaths {
       println("size=" + adj.getGraph.size)
 
       /** create an instance of DepthFirstSearch Object **/
-      println("creating BreadthFirstPaths Structure")
+      println("creating DepthFirstPaths Structure")
       time = System.currentTimeMillis()
       val dfs = DepthFirstPaths(adj)
       println("took %d seconds to instantiate dfs".format(elapsed(time)))
@@ -581,12 +581,6 @@ object TestBreathFirstPaths {
     val source = "Springfield, West Virginia"
     val destination = "Oxford, Maine"
 
-    //    val filename = scala.io.StdIn.readLine("%s","enter filename")
-    //    val delem = scala.io.StdIn.readLine("%s","enter dilimeter")
-    //    val source = scala.io.StdIn.readLine("%s", "enter source")
-    //    val destination = scala.io.StdIn.readLine("%s", "enter destination")
-    //    val weight = scala.io.StdIn.readLine("%s", "enter weight")
-    //    val weightInt = Integer.parseInt(weight)
     println("entered:file=%s,src=%s,dst=%s".format(filename, source, destination))
 
     testShowConnectionsTwoPoints(
@@ -621,6 +615,5 @@ object TestBreathFirstPaths {
     getStdin(GraphConstants.non_recursive)
     /** test some hardcoded values against simulated data **/
     //    getHardCoded(GraphConstants.non_recursive)
-
   }
 }
