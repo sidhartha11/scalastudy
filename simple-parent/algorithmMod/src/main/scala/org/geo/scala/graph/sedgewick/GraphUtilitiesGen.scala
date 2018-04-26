@@ -1,14 +1,23 @@
 package org.geo.scala.graph.sedgewick
 
-import scala.io.Source
-import scala.collection.mutable
-import org.geo.scala.graph.GraphVertexGen
-import org.geo.scala.graph.GraphConstants
-import org.geo.scala.graph.sedgewick.adjacency.Graph
-import sys.process._
-import java.net.URL
 import java.io.File
+import java.io.FileNotFoundException
+import java.net.URL
+
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
+import scala.sys.process._
+import scala.util.Try
+
+import org.geo.scala.graph.GraphConstants
+import org.geo.scala.graph.GraphVertexGen
+import org.geo.scala.graph.sedgewick.adjacency.Graph
+import scala.io.BufferedSource
+import scala.io.Codec
+import java.io.InputStream
+import java.io.BufferedInputStream
+import java.io.BufferedReader
 
 /**
  * GraphUtilities are contain utilities needed by a particular implementation
@@ -48,14 +57,13 @@ object GraphUtilitiesGen {
   def TINYGC = "tinyCG.txt"
   /**
    * This method is used to read a list of graph data
-   * Vertex, Vertex, edgeweight
+   * Vertex, Vertex, edgeweight. The BufferedSource represents an object
+   * to read from the file system or the class path
    */
 
-  def readGraph[T, W](delem: String)(file: String): ArrayBuffer[(T, T, W)] = {
-    println("reading file:" + file)
+  def readGraph[T, W](delem: String)(file: String, source: BufferedSource): ArrayBuffer[(T, T, W)] = {
     println("delem=" + delem)
     var buffer = ArrayBuffer[(T, T, W)]()
-    val source = Source.fromFile(file)
     for (line <- source.getLines()) {
       val t = line split ("\\" + delem)
       if (t.size != 3) {
@@ -65,16 +73,15 @@ object GraphUtilitiesGen {
          * simple syntax check making sure the the third
          * field is numeric
          */
-        if ( t(2) isNumeric() ) {
-        buffer += ((t(0).trim.asInstanceOf[T], t(1).trim.asInstanceOf[T], t(2).trim.asInstanceOf[W]))
+        if (t(2) isNumeric ()) {
+          buffer += ((t(0).trim.asInstanceOf[T], t(1).trim.asInstanceOf[T], t(2).trim.asInstanceOf[W]))
         } else {
           println("skipped, 3rd field not numeric")
         }
-        }
+      }
     }
     buffer
   }
-
   def downloadFile(urlname: String, filename: String): Unit = {
 
     new URL(urlname) #> new File(filename) !!
@@ -150,44 +157,33 @@ object GraphUtilitiesGen {
     count
   }
 
-  /**
-   * Create a graph object, populate with test file input
-   * directional/undirectional based on biDir
-   */
-  def initializeGraph[T, W](filename: String, biDir: GraphConstants.Value): Graph[GraphVertexGen[T, W]] = {
-    initializeGraphInner(base.trim() + filename, biDir)
-  }
-  def initializeGraph[T, W](based: String, filename: String, biDir: GraphConstants.Value): Graph[GraphVertexGen[T, W]] = {
-    initializeGraphInner(based.trim() + filename, biDir)
-  }
-  def initializeGraphInner[T, W](filename: String, biDir: GraphConstants.Value): Graph[GraphVertexGen[T, W]] = {
-    /**
-     * Create a Graph Object
-     */
-    val a: Graph[GraphVertexGen[T, W]] = Graph(biDir)
-    /**
-     * Populate the graph with data from input file
-     */
-    println("adding nodes")
-    var counter = 0
-    var skipped = 0
-    for ((node, neighbor, weight) <- readGraph[T, W](",")(filename)) {
-      counter += 1
-      //        println("adding:(%s,%s,%d)".format(node, neighbor, weight))
-      a.addEdge(GraphVertexGen[T, W](node, weight), GraphVertexGen[T, W](neighbor, weight))
-    }
-    println("read #" + counter + " records")
-    a
-  }
-
   /** utilities that load the graph with Graph object as input **/
   /** to load randomized synthetic city data use <methodname>Random **/
 
-  def loadGraph[T, W](delem: String)(base: String, filename: String, a: Graph[GraphVertexGen[T, W]]): Graph[GraphVertexGen[T, W]] = {
-    loadGraphInner[T, W](delem)(base.trim() + filename, a)
+  def fullPath(filename: String) = {
+    val namePattern = "^[A-Z]:|^\\/".r
+    println("analyzing filename:" + filename)
+    /** see if first occurrence if a full path name **/
+    val b = namePattern.findFirstIn(filename)
+    b != None
   }
+  def loadGraph[T, W](delem: String)(filename: String, a: Graph[GraphVertexGen[T, W]]): Graph[GraphVertexGen[T, W]] = {
+    /**
+     * If filename begins with a "/" then do not append the base because it is a
+     * complete filename and not located in the resources directory.
+     */
+    /** set up the input first **/
+    var input: BufferedSource = null
+    if (fullPath(filename)) {
+      /** this is on the file system **/
+      input = Source.fromFile(filename)
+      println("reading file:" + filename + " from filesystem ")
+    } else {
+      /** simple file name assumed from class path **/
+      input = Source.fromResource(filename)
+      println("reading file:" + filename + " from classpath ")
 
-  def loadGraphInner[T, W](delem: String)(filename: String, a: Graph[GraphVertexGen[T, W]]): Graph[GraphVertexGen[T, W]] = {
+    }
 
     /**
      * Populate the graph with data from input file
@@ -195,7 +191,7 @@ object GraphUtilitiesGen {
     println("adding nodes")
     var counter = 0
     var skipped = 0
-    for ((node: T, neighbor: T, weight: W) <- readGraph[T, W](delem)(filename)) {
+    for ((node: T, neighbor: T, weight: W) <- readGraph[T, W](delem)(filename, input)) {
       counter += 1
       if (DEBUG) {
         println("adding:(%s,%s,%s)".format(node, neighbor, weight))
@@ -206,32 +202,6 @@ object GraphUtilitiesGen {
     a
   }
 
-
-
-  /** utilities that load the vertices into a list only, for testing equals and compare functionality **/
-  def loadGraph[T, W](base: String, filename: String): mutable.ArrayBuffer[GraphVertexGen[T, W]] = {
-    loadGraphInnerCompare[T, W](base.trim() + filename)
-  }
-
-  def loadGraphInnerCompare[T, W](filename: String): mutable.ArrayBuffer[GraphVertexGen[T, W]] = {
-
-    import scala.collection.mutable
-    /**
-     * Populate the graph with data from input file
-     */
-    println("Loading Vertex Data")
-    var counter = 0
-    var skipped = 0
-    var list = mutable.ArrayBuffer[GraphVertexGen[T, W]]()
-    for ((node, neighbor, weight) <- readGraph[T, W](",")(filename)) {
-      counter += 2
-      list += GraphVertexGen(node, weight)
-      list += GraphVertexGen(neighbor, weight)
-      //        println("adding:(%s,%s,%d)".format(node, neighbor, weight))
-    }
-    println("read #" + counter + " records")
-    list
-  }
   def outPut(str: String) = {
     if (DEBUG) {
       println(str)
@@ -249,7 +219,7 @@ object GraphUtilitiesGen {
     /**
      * load the structure with data
      */
-    adj = loadGraph[T, W](delem)(base, filename, adj)
+    adj = loadGraph[T, W](delem)(filename, adj)
     adj
   }
 

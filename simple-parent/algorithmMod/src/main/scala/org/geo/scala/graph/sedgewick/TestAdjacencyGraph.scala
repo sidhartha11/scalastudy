@@ -58,7 +58,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[Int, Int](",")("C:\\temp\\", MEDIUMNUMBERS, adj)
+    adj = loadGraph[Int, Int](",")("C:\\temp\\" + MEDIUMNUMBERS, adj)
 
     /** display the vertex map: Map(vertex , adjacency map ) **/
     for (v <- adj.getGraph) {
@@ -74,7 +74,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[String, Int](",")(base, CITIES, adj)
+    adj = loadGraph[String, Int](",")(CITIES, adj)
 
     /** display the vertex map: Map(vertex , adjacency map ) **/
     for (v <- adj.getGraph) {
@@ -82,13 +82,7 @@ object TestAdjacencyGraph {
     }
   }
 
-  def testLoadingDataIntoBuffer {
-    val l = loadGraph[String, Int](base, CITIES)
-    println("\nunsorted\n")
-    for (x <- l) println(x)
-    println("\nsorted\n")
-    l.sortBy(_.name).foreach(println)
-  }
+
 
   def testAdjacencyFunctionalityNumbers = {
 		  /** create adjacency structure **/
@@ -98,7 +92,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[Int, Int](",")(base, NUMBERS, adj)
+    adj = loadGraph[Int, Int](",")(NUMBERS, adj)
 
     /**
      * Get the degree of each vertex in the
@@ -128,7 +122,7 @@ object TestAdjacencyGraph {
     /**
      * load the structure with data
      */
-    adj = loadGraph[String, Int](",")(base, CITIES, adj)
+    adj = loadGraph[String, Int](",")(CITIES, adj)
 
     /**
      * Get the degree of each vertex in the

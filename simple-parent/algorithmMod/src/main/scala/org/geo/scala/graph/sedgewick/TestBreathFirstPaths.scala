@@ -191,7 +191,7 @@ object TestBreathFirstPaths {
           if (DEBUG) {
             collect = collect ::: List[(Int, List[String])]((cntr, output))
             for ((hops, list) <- collect) {
-              println("hops=%d\npath=%s".format(hops, list))
+              println("hops=%d, path=%s".format(hops, list))
             }
           }
           //        println(collect)
@@ -317,9 +317,11 @@ object TestBreathFirstPaths {
         if (total % 10000 == 0) println("so far:%d".format(total))
         total += 1
         //if (DEBUG)
-        println(vertex.name + " to " + destination.name + ": ")
+        println(total + ":" + vertex.name + " to " + destination.name + ": ")
 
         output = output ::: List[String](vertex.name + " to " + destination.name + ": ")
+              time = System.currentTimeMillis()
+
         for (p <- bfs.pathTo(destination, vertex)) {
 
           if (p == vertex) {
@@ -334,9 +336,12 @@ object TestBreathFirstPaths {
           }
         }
         if (DEBUG) {
+        println("took %d seconds to collect paths".format(elapsed(time)))
+
           collect = collect ::: List[(Int, List[String])]((cntr, output))
           for ((hops, list) <- collect) {
-            println("hops=%d\npath=%s".format(hops, list))
+            list.take(25).foreach(println(_))
+            println("hops=%d".format(hops))
           }
         }
         //        println(collect)
@@ -369,7 +374,7 @@ object TestBreathFirstPaths {
       println("creating BreadthFirstPaths Structure")
       time = System.currentTimeMillis()
       val dfs = DepthFirstPaths(adj)
-      println("took %d seconds to instantiate bfs".format(elapsed(time)))
+      println("took %d seconds to instantiate dfs".format(elapsed(time)))
 
       /** pick a vertex to analyze **/
       println("picking a vertex to check")
@@ -393,9 +398,10 @@ object TestBreathFirstPaths {
         if (total % 10000 == 0) println("so far:%d".format(total))
         total += 1
         //if (DEBUG)
-        println(vertex.name + " to " + destination.name + ": ")
+        println(total + ":" + vertex.name + " to " + destination.name + ": ")
 
         output = output ::: List[String](vertex.name + " to " + destination.name + ": ")
+        time = System.currentTimeMillis()
         for (p <- dfs.pathTo(destination, vertex)) {
 
           if (p == vertex) {
@@ -411,8 +417,10 @@ object TestBreathFirstPaths {
         }
         if (DEBUG) {
           collect = collect ::: List[(Int, List[String])]((cntr, output))
+          println("took %d seconds to collect paths".format(elapsed(time)))
           for ((hops, list) <- collect) {
-            println("hops=%d\npath=%s".format(hops, list))
+            list.take(25).foreach(println(_))
+            println("hops=%d".format(hops))
           }
         }
         //        println(collect)
@@ -495,7 +503,7 @@ object TestBreathFirstPaths {
         if (DEBUG) {
           collect = collect ::: List[(Int, List[String])]((cntr, output))
           for ((hops, list) <- collect) {
-            println("hops=%d\npath=%s".format(hops, list))
+            println("hops=%d, path=%s".format(hops, list))
           }
         }
         //        println(collect)
@@ -540,7 +548,7 @@ object TestBreathFirstPaths {
       if (!(data == null || data.trim() == ""))
         destination = data
 
-      data = scala.io.StdIn.readLine("%s", "enter search-type(bfs,bfs)")
+      data = scala.io.StdIn.readLine("%s", "enter search-type(bfs,dfs)")
       if (!(data == null || data.trim() == "")) {
         searchType = data
         println("entered:src=%s,dst=%s,searchType=%s".format(source, destination, searchType))

@@ -12,6 +12,10 @@ import org.geo.scala.graph.GraphVertexGen
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
 import org.geo.scala.graph.sedgewick.adjacency.analysis.BreadthFirstPaths
+import scala.collection.mutable.ArrayBuffer
+import java.io.InputStream
+import scala.io.Codec
+
 object CreateSyntheticData {
   var cache: mutable.Map[String, Int] = mutable.Map[String, Int]()
 
@@ -27,7 +31,55 @@ object CreateSyntheticData {
       |/resources/
       """.stripMargin.replaceAll("\n", "")
   def filename = "cities.txt"
+  def readGraph[T, W](delem: String)(file: String): ArrayBuffer[(T, T, W)] = {
+    println("reading file:" + file)
+    println("delem=" + delem)
+    var buffer = ArrayBuffer[(T, T, W)]()
+    val source = Source.fromFile(file)
+    for (line <- source.getLines()) {
+      val t = line split ("\\" + delem)
+      if (t.size != 3) {
+        println("skipping , 3 elements required, v delim v delim wt" + line)
+      } else {
+        /**
+         * simple syntax check making sure the the third
+         * field is numeric
+         */
+        if (t(2) isNumeric ()) {
+          buffer += ((t(0).trim.asInstanceOf[T], t(1).trim.asInstanceOf[T], t(2).trim.asInstanceOf[W]))
+        } else {
+          println("skipped, 3rd field not numeric")
+        }
+      }
+    }
+    buffer
+  }
+  /** utilities that load the vertices into a list only, for testing equals and compare functionality **/
+  def loadGraph[T, W](base: String, filename: String): mutable.ArrayBuffer[GraphVertexGen[T, W]] = {
+    loadGraphInnerCompare[T, W](base.trim() + filename)
+  }
 
+  def loadGraphInnerCompare[T, W](filename: String): mutable.ArrayBuffer[GraphVertexGen[T, W]] = {
+
+    /**
+     * Populate the graph with data from input file
+     */
+    println("Loading Vertex Data")
+    var counter = 0
+    var skipped = 0
+    var list = mutable.ArrayBuffer[GraphVertexGen[T, W]]()
+    for ((node, neighbor, weight) <- readGraph[T, W](",")(filename)) {
+      counter += 2
+      list += GraphVertexGen(node, weight)
+      list += GraphVertexGen(neighbor, weight)
+      //        println("adding:(%s,%s,%d)".format(node, neighbor, weight))
+    }
+    println("read #" + counter + " records")
+    list
+  }
+  def initializeGraph[T, W](based: String, filename: String, biDir: GraphConstants.Value): Graph[GraphVertexGen[T, W]] = {
+    initializeGraphInner(based.trim() + filename, biDir)
+  }
   def loadGraphRandom[T, W](base: String, filename: String, a: Graph[GraphVertexGen[T, W]]): Graph[GraphVertexGen[T, W]] = {
     loadGraphInnerRandom[T, W](base.trim() + filename, a)
   }
@@ -95,7 +147,7 @@ object CreateSyntheticData {
     val input = readFile(filename)
     val buf = mutable.ArrayBuffer[(T, T, W)]()
     for (i <- input) {
-      println("i=%s, i.size=%d, %s".format(i,i.size, i.getClass))
+      println("i=%s, i.size=%d, %s".format(i, i.size, i.getClass))
       val elements = i split ("\\^")
       //        println(elements)
       val left = elements(0)
@@ -261,7 +313,105 @@ object CreateSyntheticData {
       if (DEBUG)
         println
     }
+   /**
+   * Create a graph object, populate with test file input
+   * directional/undirectional based on biDir
+   * If the file name is a full path name, do not prepend the base directory.
+   * TBD: make the non full path get the file from the class path.
+   */
+  def initializeGraph[T, W](filename: String, biDir: GraphConstants.Value): Graph[GraphVertexGen[T, W]] = {
+    if (fullPath(filename)) {
+      initializeGraphInner(filename, biDir)
+    } else {
+      initializeGraphInner(base.trim() + filename, biDir)
+    }
+  }
+  def testLoadingDataIntoBuffer {
+    val l = loadGraph[String, Int](base, CITIES)
+    println("\nunsorted\n")
+    for (x <- l) println(x)
+    println("\nsorted\n")
+    l.sortBy(_.name).foreach(println)
+  }
+  def initializeGraphInner[T, W](filename: String, biDir: GraphConstants.Value): Graph[GraphVertexGen[T, W]] = {
+    /**
+     * Create a Graph Object
+     */
+    val a: Graph[GraphVertexGen[T, W]] = Graph(biDir)
+    /**
+     * Populate the graph with data from input file
+     */
+    println("adding nodes")
+    var counter = 0
+    var skipped = 0
+    for ((node, neighbor, weight) <- readGraph[T, W](",")(filename)) {
+      counter += 1
+      //        println("adding:(%s,%s,%d)".format(node, neighbor, weight))
+      a.addEdge(GraphVertexGen[T, W](node, weight), GraphVertexGen[T, W](neighbor, weight))
+    }
+    println("read #" + counter + " records")
+    a
+  }
   def main(args: Array[String]) {
+  def fullPath(filename: String) = {
+    val namePattern = "^[A-Z]:|^\\/".r
+    println("analyzing filename:" + filename)
+    /** see if first occurrence if a full path name **/
+    val b = namePattern.findFirstIn(filename)
+    b != None
+  }
+  def fromResource(resource: String, classLoader: ClassLoader = Thread.currentThread().getContextClassLoader())(implicit codec: Codec): InputStream = {
+    println("calling classLoader")
+    val l = classLoader.getResourceAsStream(resource)
+    println("got " + l)
+    //  var i = l.read()
+    //  while ( i != -1 ) {
+    //       print(i.asInstanceOf[Char])
+    //       i = l.read()
+    //  }
+    //    println("reading one char")
+    //    val i:Char = ldr.read().asInstanceOf[Char]
+    //    println("i=" + i)
+    println("returning l:" + l)
+    l
+  }
+
+  def niceFeedbackReadResource(resource: String): InputStream = {
+
+    val l = fromResource(resource)
+    println("got InputStream:" + l)
+    l
+  }
+
+  def testfullPath = {
+    val filename = "C:\\temp\\test\\some.txt"
+    val filename2 = "/some/linux/file.txt"
+    val filename3 = "file.txt"
+
+    println(fullPath(filename))
+    println(fullPath(filename2))
+    println(fullPath(filename3))
+  }
+
+  def testRawRead = {
+    /** test read from class path **/
+    val l = niceFeedbackReadResource("rawCities.txt")
+    var i = l.read()
+    while (i != -1) {
+      print(i.asInstanceOf[Char])
+      i = l.read()
+    }
+  }
+  //  /** test read from class path **/
+  //  val l = niceFeedbackReadResource("rawCities.txt")
+  //  var i = l.read()
+  //  while ( i != -1 ) {
+  //       print(i.asInstanceOf[Char])
+  //       i = l.read()
+  //  }
+
+  val readmeText: Iterator[String] = Source.fromResource("rawCities.txt").getLines
+  for (i <- readmeText) println(i)
     val b = syntheticDataRaw("C:\\temp\\rawCities.txt")
     for (l <- b) println("left=%s, right=%s,weight=%d".format(l._1, l._2, l._3))
     //   testTraceHopListRandom("Washington, Kansas", RAWCITIES, GraphConstants.non_recursive)
