@@ -251,7 +251,8 @@ object Graph {
     
     /**
      * The simple matter of reversing a digraph is to just 
-     * added the vertices of the current graph in reverse order.
+     * added the vertices of the current graph in reverse order by
+     * forcing each vertex to point to the original originating vertex.
      * The restriction here is that this must only be applied to 
      * a directed graph and not a undirected graph.
      * @throws This method will throw an illegalaccess exception if you 

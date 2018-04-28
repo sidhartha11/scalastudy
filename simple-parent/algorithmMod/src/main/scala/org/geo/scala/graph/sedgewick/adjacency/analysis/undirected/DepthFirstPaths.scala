@@ -1,73 +1,81 @@
-package org.geo.scala.graph.sedgewick.adjacency.analysis
+package org.geo.scala.graph.sedgewick.adjacency.analysis.undirected
 
 import scala.collection.mutable
-import org.geo.scala.graph.GraphConstants
+import java.util.Stack
 import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
-
 import org.geo.scala.graph.sedgewick.adjacency.Graph
-import scala.collection.mutable.Queue
+import org.geo.scala.graph.GraphConstants
 
-trait CC[T] {
+import scala.annotation.tailrec
+
+
+trait DepthFirstPaths[T] {
   /** find all paths from source s **/
-  def process(t: GraphConstants.Value): Unit
-  def connected(v: T, w: T): Boolean // are v and w connected ?
-  def count: Int // number of connected components
-  def id(v: T): Option[Int] // component identifier for v, key in adj map
+  def process(t: GraphConstants.Value)(s: T): Unit
+  def hasPathTo(v: T): Boolean // is there a path from s to v?
+  def pathTo(v: T, s: T): Iterable[T]
+  /** path from s to v **/
 }
 
-object CC {
-  def apply[T](graph: Graph[T]): CC[T] =
-    new CCImpl[T](graph)
+object DepthFirstPaths {
+  def apply[T](graph: Graph[T]): DepthFirstPaths[T] =
+    new DepthFirstPathsImpl[T](graph)
 
   /** private implementation **/
-  private class CCImpl[T](
-    private val graph: Graph[T]) extends CC[T] {
-
+  private class DepthFirstPathsImpl[T](
+    private val graph: Graph[T]) extends DepthFirstPaths[T] {
     private var recurTyp: GraphConstants.Value = _
     println("instantiating DepthFirstPathsImpl")
     /** map used to determine is a vertex is connected to the input vertex,s **/
     private var marked: mutable.Map[T, Boolean] = _
     private var edgeTo: mutable.Map[T, T] = _
 
-    private var idV: mutable.Map[T, Int] = _
-    private var counter = 0
+    /** count of all vertices connected to input vertex s **/
+    var counter = 0
 
-    var dcounter = 0
-    /** used for tracing and debugging **/
-    var start = 0l
-    /** used for tracing and debugging **/
+    var dcounter = 0 /** used for tracing and debugging **/
+    var start = 0l    /** used for tracing and debugging **/
     /**
      *         private implementations
      */
     private def DEBUG = false
 
+
     /**
      *         private implementations
      */
 
+
+    
     /**
-     * Two versions of a depth first search of a graph used
-     * to determine the path between a source and destination
-     * vertex in a graph. This works with both undirected and
+     * Two versions of a depth first search of a graph used 
+     * to determine the path between a source and destination 
+     * vertex in a graph. This works with both undirected and 
      * directed graphs. This version deviates from the classical
-     * versions given in most texts in that it uses a HashMap to
-     * store both vertices and adjacency lists.
-     *
+     * versions given in most texts in that it uses a HashMap to 
+     * store both vertices and adjacency lists. 
+     * 
      * @see https://github.com/sidhartha11/scalastudy
      */
-
+    
     /** RECURSIVE VERSION **/
 
     // @tailrec
 
+
     private def dfsRecursive(graph: Graph[T], v: T): Unit = {
       marked(v) = true
       /** count each connected vertex **/
-      idV(v) = counter
+      counter += 1
       /** get the adjacent neighbors of v **/
+
+//      for (w <- graph.adjreverse(v)) {
+
+
       for (w <- graph.adjreverse(v)) {
         /** if this neigbor has not been seen yet **/
         if (!hasPathTo(w)) {
+          edgeTo(w) = v
           /** check the adjacent neighors of w **/
           dfsRecursive(graph, w)
         }
@@ -79,18 +87,16 @@ object CC {
       val stack = mutable.Stack[T]()
       /** push the first element onto the stack **/
       stack.push(v)
-
       while (!stack.isEmpty) {
         val s = stack.pop()
         if (!hasPathTo(s)) {
-       
+          counter += 1
           marked(s) = true
-          idV(s) = counter
           /** get all the adjacent vertices of s **/
           /** push each one that is not marked onto the stack **/
           for (w <- graph.adj(s)) {
             if (!hasPathTo(w)) {
-             // idV(w) = counter
+              edgeTo += (w -> s)
               stack.push(w)
             }
           }
@@ -98,7 +104,7 @@ object CC {
       }
     }
 
-    override def toString = "CC:" + counter
+    override def toString = "DepthFirstPaths:" + counter
 
     /**
      *          public api implementation
@@ -115,20 +121,46 @@ object CC {
       if (t == None) false
       else t get
     }
-    def connected(v: T, w: T): Boolean = {
-      id(v) == id(w)
+
+    def pathTo(v: T, s: T): Iterable[T] = {
+
+      if ( DEBUG ) {
+      start = System.currentTimeMillis()
+      dcounter += 1
+      println("%d:%d:finding path from %s to %s".format(edgeTo.size,dcounter,s,v))
+      }
+
+      if (!hasPathTo(v)) {
+        Iterable.empty[T]
+      } else {
+        var path = mutable.Buffer[T]()
+        var x = v
+        /** adding **/
+        x +=: path
+        while (x != s) {
+          x = edgeTo(x)
+          x +=: path
+        }
+        /** commented out **/
+        // s +=: path
+
+        if ( DEBUG ) {
+        println("elapsed time:%d".format((System.currentTimeMillis() - start)/1000))
+        println("buffer size returning:%d".format(path.size))
+        }
+        
+
+        path
+      }
     }
 
-    def id(v: T): Option[Int] = {
-      idV get v
-    }
-    def process(recurType: GraphConstants.Value): Unit = {
+    def process(recurType: GraphConstants.Value)(s: T): Unit = {
       /** disallow input of unknown vetex **/
+      require(requireVertexInGraph(graph, s), "vertex not in graph")
+
       /** map used to determine is a vertex is connected to the input vertex,s **/
-      println("recurType:" + recurType)
       marked = new mutable.HashMap[T, Boolean]()
       edgeTo = new mutable.HashMap[T, T]()
-      idV    = new mutable.HashMap[T,Int]()
 
       /** count of all vertices connected to input vertex s **/
       counter = 0
@@ -136,22 +168,11 @@ object CC {
        * Constructor Processing
        */
       recurTyp = recurType
-      var fun: (Graph[T],T) => Unit = null
       recurTyp match {
-        case GraphConstants.recursive     => fun = dfsRecursive _
-        case GraphConstants.non_recursive => fun = dfs _
+        case GraphConstants.recursive     => dfsRecursive(graph, s)
+        case GraphConstants.non_recursive => dfs(graph, s)
       }
-    /**
-     * This is the call in the constructor of ConnectedComponentsImpl
-     * Basically, this will traverse all of the verticies until all have
-     * been visited. Dfs will be called on each "non-visited" vertex
-     */
-    for ((k,v) <- graph.getGraph) {
-      if ( ! hasPathTo(k) ) {
-        fun(graph,k)
-        counter += 1
-      }
-    }
+
       /** debug code **/
       if (DEBUG) {
         for ((k, v) <- marked) {
@@ -162,27 +183,4 @@ object CC {
     }
   }
 
-}
-
-object runner extends App {
-
-  val graph = instantiateGraph[String, Int](",")(CITIES)
-  val cc = CC(graph)
-  cc.process(GraphConstants.non_recursive)
-  println("%d components".format(cc.count))
-  var components: mutable.Map[Int,Queue[String]] = 
-    new mutable.HashMap[Int,Queue[String]]() 
-  
-  for ( i <- 0 until cc.count ) components(i) = Queue[String]()
-  
-  for ( g <- graph.getGraph.keySet ) {
-    components( cc.id(g).get ).enqueue(g.name)
-  }
-  
-  for ( i <- 0 until cc.count ) {
-    for ( q <- components (i) ) {
-      print(q + " ")
-    }
-    println
-  } 
 }

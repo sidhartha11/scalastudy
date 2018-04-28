@@ -11,7 +11,7 @@ import org.geo.scala.graph.GraphConstants
 import org.geo.scala.graph.GraphVertexGen
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
-import org.geo.scala.graph.sedgewick.adjacency.analysis.BreadthFirstPaths
+import org.geo.scala.graph.sedgewick.adjacency.analysis.undirected.BreadthFirstPaths
 import scala.collection.mutable.ArrayBuffer
 import java.io.InputStream
 import scala.io.Codec

@@ -4,7 +4,7 @@ import org.geo.scala.graph.GraphConstants
 import org.geo.scala.graph.GraphVertexGen
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
-import org.geo.scala.graph.sedgewick.adjacency.analysis.DepthFirstSearch
+import org.geo.scala.graph.sedgewick.adjacency.analysis.undirected.DepthFirstSearch
 
 object TestDepthFirstSearch {
 

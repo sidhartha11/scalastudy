@@ -4,9 +4,16 @@ import org.geo.scala.graph.GraphConstants
 import org.geo.scala.graph.GraphVertexGen
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
-import org.geo.scala.graph.sedgewick.adjacency.analysis.BreadthFirstPaths
-import org.geo.scala.graph.sedgewick.adjacency.analysis.DepthFirstPaths
+import org.geo.scala.graph.sedgewick.adjacency.analysis.undirected.BreadthFirstPaths
+import org.geo.scala.graph.sedgewick.adjacency.analysis.undirected.DepthFirstPaths
+import org.geo.scala.graph.sedgewick.adjacency.analysis.directed.DirectedDFS
+import org.geo.scala.graph.sedgewick.adjacency.analysis.directed.DirectedCycle
 
+/**
+ * @author george
+ * This object is used for testing digraphs
+ *
+ */
 object TestDiGraph {
 
   def DEBUG = true
@@ -14,17 +21,70 @@ object TestDiGraph {
   def test(tyP: GraphConstants.Value) {
     println("testing:%s".format(tyP))
     /** create an adjacency object **/
-    val adj = instantiateGraph[String, Int](",")("tinyDG.txt",GraphConstants.directed)
+    val adj = instantiateGraph[String, Int](",")("tinyDG.txt", GraphConstants.directed)
     if (DEBUG) {
       adj.printGraph
     }
-    
+
     /** now reverse the directed graph **/
     val adjR = adj.reverseGraph
     if (DEBUG) {
       println("showing reversed graph\n\n")
       adjR.printGraph
     }
+  }
+
+  def testDirectedDFS(args: Array[String]) {
+    /** first create a directed adjacency graph **/
+    val adj = instantiateGraph[String, Int](",")("tinyDG.txt", GraphConstants.directed)
+    /** create a DirectedDFS instance **/
+    val g = DirectedDFS(adj)
+    /** create a list of Iterables to process **/
+    val itr =
+      for (i <- List("1", "2", "6").toIterable) yield {
+        GraphVertexGen[String, Int](i, 100)
+      }
+
+    /** process the Iterables **/
+    g.process(GraphConstants.recursive, true)(itr)
+
+    /** now traverse thru the vertices to find out what is reachable **/
+    /** by the list of Iterable input vertices **/
+    for (k <- adj.getGraph.keySet if g.marked(k)) {
+      print(k + " ")
+    }
+    println
+
+  }
+  
+    def testDirectedCycle {
+    /** first create a directed adjacency graph **/
+    val adj = instantiateGraph[String, Int](",")("tinyDG.txt", GraphConstants.directed)
+    /** create a DirectedDFS instance **/
+    val g = DirectedCycle(adj)
+
+    g.process(GraphConstants.recursive)
+
+    /** now traverse thru the vertices to find out what is reachable **/
+    /** by the list of Iterable input vertices **/
+    for (k <- adj.getGraph.keySet) {
+      print(k + " ")
+    }
+    println
+    
+    /**
+     * now check for cycles 
+     */
+    if ( g.hasCycle ) {
+      println("cycles detected")
+      for ( i <- g.cycle ) {
+        print(i + " " )
+      }
+      println
+    } else {
+      println("no cycles detected")
+    }
+
   }
 
   /** TEST TO SHOW PATH FROM ONE POINT TO ANOTHER POINT **/
@@ -189,14 +249,14 @@ object TestDiGraph {
     }
 
   def getStdin(recursive: GraphConstants.Value) = {
-    val filename = scala.io.StdIn.readLine("%s", "enter filename")
+    val filename = scala.io.StdIn.readLine("%s", "(dgraph only)enter filename")
     val delem = scala.io.StdIn.readLine("%s", "enter dilimeter")
     println("entered:file=%s,delim=%s".format(filename, delem))
 
     /** get the adjacency map only once **/
     var time = System.currentTimeMillis()
     var adj: Graph[GraphVertexGen[String, Int]] = null
-    adj = instantiateGraph[String, Int](delem)(filename,GraphConstants.directed)
+    adj = instantiateGraph[String, Int](delem)(filename, GraphConstants.directed)
     println("took %d seconds to read and load adj file".format(elapsed(time)))
     if (DEBUG_GRAPH)
       adj.printGraph
@@ -247,10 +307,13 @@ object TestDiGraph {
   }
 
   def main(args: Array[String]) {
-    test(GraphConstants.non_recursive)
+
+    // testDirectedDFS(args)
+    // test(GraphConstants.non_recursive)
 
     /** test using user console input **/
     // getStdin(GraphConstants.non_recursive)
+    testDirectedCycle
 
   }
 }

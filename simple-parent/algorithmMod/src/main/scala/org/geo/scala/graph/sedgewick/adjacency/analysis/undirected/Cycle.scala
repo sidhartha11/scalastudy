@@ -1,4 +1,4 @@
-package org.geo.scala.graph.sedgewick.adjacency.analysis
+package org.geo.scala.graph.sedgewick.adjacency.analysis.undirected
 
 import scala.collection.mutable
 import java.util.Stack
