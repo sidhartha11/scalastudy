@@ -1,0 +1,15 @@
+Algorithms,Theoretical CS,100
+Algorithms,Databases,100
+Algorithms,Scientific Computing,100
+Introduction to CS,Advanced Programming,100
+Introduction to CS,Algorithms,100
+Advanced Programming,Scientific Computing,100
+Scientific Computing,Computational Biology,100
+Theoretical CS,Computational Biology,100
+Theoretical CS,Artificial Intelligence,100
+Linear Algebra,Theoretical CS,100
+Calculus,Linear Algebra,100
+Artificial Intelligence,Neural Networks,100
+Artificial Intelligence,Robotics,100
+Artificial Intelligence,Machine Learning,100
+Machine Learning,Neural Networks,100

@@ -56,10 +56,14 @@ object TestDiGraph {
     println
 
   }
-  
-    def testDirectedCycle {
+
+  def testDirectedCycle {
     /** first create a directed adjacency graph **/
-    val adj = instantiateGraph[String, Int](",")("tinyDG.txt", GraphConstants.directed)
+    val adj = instantiateGraph[String, Int](",")("jobs.txt", GraphConstants.directed)
+    
+        if (DEBUG) {
+      adj.printGraph
+    }
     /** create a DirectedDFS instance **/
     val g = DirectedCycle(adj)
 
@@ -71,14 +75,14 @@ object TestDiGraph {
       print(k + " ")
     }
     println
-    
+
     /**
-     * now check for cycles 
+     * now check for cycles
      */
-    if ( g.hasCycle ) {
+    if (g.hasCycle) {
       println("cycles detected")
-      for ( i <- g.cycle ) {
-        print(i + " " )
+      for (i <- g.cycle) {
+        print(i + " ")
       }
       println
     } else {
@@ -305,7 +309,9 @@ object TestDiGraph {
 
     }
   }
-
+  def convertAlgorithmFormat = {
+    
+  }
   def main(args: Array[String]) {
 
     // testDirectedDFS(args)

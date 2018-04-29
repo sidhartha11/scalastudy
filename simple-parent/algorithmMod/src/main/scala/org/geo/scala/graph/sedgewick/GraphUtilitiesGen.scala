@@ -215,7 +215,7 @@ object GraphUtilitiesGen {
     Graph[GraphVertexGen[T, W]]()
   }
 
-  def instantiateGraph[T, W](delem: String)(filename: String,dir: GraphConstants.Value=GraphConstants.undirected) = {
+  def instantiateGraph[T, W](delem: String)(filename: String, dir: GraphConstants.Value = GraphConstants.undirected) = {
     println("creating adjacency structure:" + dir)
     var adj = createAdjacencyMap[T, W](dir)
     if (DEBUG)
@@ -227,7 +227,45 @@ object GraphUtilitiesGen {
     adj
   }
 
+  def conversion1(delemfrom: String)(delemto: String)(filename: String) = {
+    println("converting file format:" + filename)
+    var input: BufferedSource = null
+    if (fullPath(filename)) {
+      /** this is on the file system **/
+      input = Source.fromFile(filename)
+      println("reading file:" + filename + " from filesystem ")
+    } else {
+      /** simple file name assumed from class path **/
+      input = Source.fromResource(filename)
+      println("reading file:" + filename + " from classpath ")
+
+    }
+    val outer = for (line <- input.getLines()) yield {
+      val t = line split ("\\" + delemfrom)
+      val vertex = t head
+      val list = for (remaining <- t tail) yield {
+//        println("vertex=" + vertex + ", remaining=" + remaining)
+        (vertex, remaining, 100)
+      }
+      list
+    }
+    outer
+  }
+
   def elapsed(start: Long): Long = {
     (System.currentTimeMillis() - start) / 1000
+  }
+}
+object GraphUtilRunner {
+  import GraphUtilitiesGen._
+  def main(args: Array[String]) {
+    val t = conversion1("/")(",")("C:\\books\\algs4-data\\algs4-data\\jobs.txt")
+   
+    println("*****dumping")
+    for ( i <- t ) {
+     for ( a <- i ) {
+       println(a)
+     }
+   }
   }
 }

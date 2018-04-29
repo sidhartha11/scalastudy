@@ -8,6 +8,14 @@ import org.geo.scala.graph.GraphConstants
 
 import scala.annotation.tailrec
 
+/**
+ * This class is a first attempt to tranlate Sedgewick's cycle 
+ * detection algorithm from Java to Scala.
+ * It is a work in progress.
+ * @author george
+ *
+ * @param <T>
+ */
 trait DirectedCycle[T] {
   def process(t: GraphConstants.Value): Unit
   def hasPathTo(v: T): Boolean // is there a path from s to v?
@@ -67,27 +75,41 @@ object DirectedCycle {
       /** count each connected vertex **/
       counter += 1
       /** get the adjacent neighbors of v **/
-
-      for (w <- graph.adj(v) if !hasCycle) {
-
-        /** if this neigbor has not been seen yet **/
-        if (!hasPathTo(w)) {
-          edgeTo(w) = v
-          /** check the adjacent neighors of w **/
-          dfsRecursive(graph, w)
-        } else if (onTheStack(w)) {
-          cycleV = new Stack[T]()
-          /** this appears to require the old while loop **/
-          var x = v
-          while (x != w) {
-            cycleV.push(x)
-            x = edgeTo(x)
+      println("v=" + v)
+      for (w <- graph.adj(v)) {
+        if (!hasCycle) {
+          /** if this neigbor has not been seen yet **/
+          if (!hasPathTo(w)) {
+            edgeTo(w) = v
+            /** check the adjacent neighors of w **/
+            dfsRecursive(graph, w)
+          } else if (onTheStack(w)) {
+            println("w on stack = " + w)
+            cycleV = new Stack[T]()
+            /** this appears to require the old while loop **/
+            var x = v
+            while (x != null && x != w) {
+              //          while (x != w) {
+              println("x=" + x + ",w=" + w)
+              cycleV.push(x)
+              val xt = edgeTo get x
+              println("xt=" + xt)
+              if (xt == None)
+                x = null.asInstanceOf[T]
+              else
+                x = xt get
+              // x = edgeTo(x)
+            }
+            if (x == null) {
+              cycleV = null
+            } else {
+              cycleV.push(w)
+              cycleV.push(v)
+            }
           }
-          cycleV.push(w)
-          cycleV.push(v)
         }
+        onStack(v) = false
       }
-      onStack(v) = false
     }
 
     /** ITERATIVE VERSION **/
@@ -167,7 +189,7 @@ object DirectedCycle {
       }
     }
 
-    def hasCycle: Boolean = !cycleV.isEmpty
+    def hasCycle: Boolean = cycleV != null && !cycleV.isEmpty
 
     /**
      * Since this method relies on a java.util.Stack and the
