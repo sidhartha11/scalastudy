@@ -5,11 +5,11 @@ import java.util.Stack
 import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import org.geo.scala.graph.GraphConstants
-
+import util.control.Breaks._
 import scala.annotation.tailrec
 
 /**
- * This class is a first attempt to tranlate Sedgewick's cycle 
+ * This class is a first attempt to tranlate Sedgewick's cycle
  * detection algorithm from Java to Scala.
  * It is a work in progress.
  * @author george
@@ -67,48 +67,113 @@ object DirectedCycle {
 
     /** RECURSIVE VERSION **/
 
-    // @tailrec
-
     private def dfsRecursive(graph: Graph[T], v: T): Unit = {
+      /** mark v as being seen **/
       marked(v) = true
+      /** put v on the stack to check for cycles **/
       onStack(v) = true
-      /** count each connected vertex **/
+      /** count each recursive call  **/
       counter += 1
       /** get the adjacent neighbors of v **/
-      println("v=" + v)
-      for (w <- graph.adj(v)) {
-        if (!hasCycle) {
-          /** if this neigbor has not been seen yet **/
-          if (!hasPathTo(w)) {
+      breakable {
+        for (w <- graph.adj(v)) {
+          if (hasCycle) {
+            break
+          } /** w does not have an edge stored yet **/ else if (!hasPathTo(w)) {
             edgeTo(w) = v
             /** check the adjacent neighors of w **/
             dfsRecursive(graph, w)
+            /** there is already an edge to w, if it is also on the stack we have a cycle **/
           } else if (onTheStack(w)) {
-            println("w on stack = " + w)
             cycleV = new Stack[T]()
-            /** this appears to require the old while loop **/
+            /** collect all edges to v to find the cycle **/
             var x = v
-            while (x != null && x != w) {
-              //          while (x != w) {
-              println("x=" + x + ",w=" + w)
-              cycleV.push(x)
-              val xt = edgeTo get x
-              println("xt=" + xt)
-              if (xt == None)
-                x = null.asInstanceOf[T]
-              else
-                x = xt get
-              // x = edgeTo(x)
+            var notdetected = x != w
+            var notonlist = false
+            breakable {
+              while (notdetected) {
+                cycleV.push(x)
+                val xt = edgeTo get x
+                println("xt=" + xt)
+                if (xt == None) {
+                  notonlist = true
+                  cycleV = null
+                  break
+                }
+                x = xt.get
+                notdetected = x != w
+              }
+              /** end of while **/
             }
-            if (x == null) {
-              cycleV = null
-            } else {
+            /** end of breakable **/
+            if (cycleV != null) {
               cycleV.push(w)
               cycleV.push(v)
             }
           }
+          onStack(v) = false
         }
-        onStack(v) = false
+        /** end of for loop **/
+      }
+    }
+
+    private def dfsRecursiveWithTrace(graph: Graph[T], v: T): Unit = {
+      /** mark v as being seen **/
+      marked(v) = true
+      /** put v on the stack to check for cycles **/
+      onStack(v) = true
+      /** count each recursive call  **/
+      counter += 1
+      /** get the adjacent neighbors of v **/
+      println("v=" + v)
+      breakable {
+        println("checking on adj of %s %s".format(v, graph.adj(v)))
+        for (w <- graph.adj(v)) {
+          if (hasCycle) {
+            println("breaking out of for loop due to cycle present")
+            break
+          } /** w does not have an edge stored yet **/ else if (!hasPathTo(w)) {
+            edgeTo(w) = v
+            /** check the adjacent neighors of w **/
+            dfsRecursive(graph, w)
+            /** there is already an edge to w, if it is also on the stack we have a cycle **/
+          } else if (onTheStack(w)) {
+            println("w on stack = " + w)
+            cycleV = new Stack[T]()
+            /** collect all edges to v to find the cycle **/
+            var x = v
+            var notdetected = x != w
+            var notonlist = false
+            breakable {
+              while (notdetected) {
+                println("v=" + v + ",x=" + x + ",w=" + w)
+                println("edgeTo = %s".format(edgeTo))
+                cycleV.push(x)
+                val xt = edgeTo get x
+                println("xt=" + xt)
+                if (xt == None) {
+                  println("None detected")
+                  println(">>x = " + x)
+                  println(">>edgeTo = " + edgeTo)
+                  notonlist = true
+                  cycleV = null
+                  break
+                }
+                x = xt get
+
+                notdetected = x != w
+              }
+              /** end of while **/
+            }
+            /** end of breakable **/
+            if (cycleV != null) {
+              cycleV.push(w)
+              cycleV.push(v)
+            }
+          }
+          onStack(v) = false
+        }
+        /** end of for loop **/
       }
     }
 

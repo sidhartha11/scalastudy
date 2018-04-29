@@ -59,7 +59,7 @@ object TestDiGraph {
 
   def testDirectedCycle {
     /** first create a directed adjacency graph **/
-    val adj = instantiateGraph[String, Int](",")("jobs.txt", GraphConstants.directed)
+    val adj = instantiateGraph[String, Int]("|")("syntheticCities.txt", GraphConstants.directed)
     
         if (DEBUG) {
       adj.printGraph
