@@ -48,7 +48,7 @@ object TopologicalMain {
   import Topological._
   def main(args: Array[String] ) {
         val adj = instantiateGraph[String, Int](",")("jobs.txt", GraphConstants.directed)
-
+        adj.printGraph
         val top = Topological(adj)
         top.process(GraphConstants.recursive)
         for ( v <- top.order ) {

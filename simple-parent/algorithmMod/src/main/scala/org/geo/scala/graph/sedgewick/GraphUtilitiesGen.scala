@@ -26,6 +26,8 @@ import java.io.BufferedReader
  */
 object GraphUtilitiesGen {
 
+
+  
   implicit class OpsNum(val str: String) extends AnyVal {
     def isNumeric() = scala.util.Try(str.toDouble).isSuccess
   }

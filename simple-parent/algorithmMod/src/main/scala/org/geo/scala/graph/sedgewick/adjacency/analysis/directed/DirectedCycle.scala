@@ -94,7 +94,6 @@ object DirectedCycle {
               while (notdetected) {
                 cycleV.push(x)
                 val xt = edgeTo get x
-                println("xt=" + xt)
                 if (xt == None) {
                   notonlist = true
                   cycleV = null
@@ -200,15 +199,6 @@ object DirectedCycle {
     }
 
     override def toString = "DirectedCycle:" + counter
-
-    /**
-     *          public api implementation
-     */
-
-    /**
-     * @return the number of verticies connect to input
-     * source vertex
-     */
     def count: Int = counter
 
     def hasPathTo(v: T): Boolean = {

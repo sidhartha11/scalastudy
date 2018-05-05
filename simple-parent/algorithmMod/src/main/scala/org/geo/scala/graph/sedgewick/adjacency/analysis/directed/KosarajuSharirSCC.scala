@@ -1,4 +1,4 @@
-package org.geo.scala.graph.sedgewick.adjacency.analysis.undirected
+package org.geo.scala.graph.sedgewick.adjacency.analysis.directed
 
 import scala.collection.mutable
 import org.geo.scala.graph.GraphConstants
@@ -7,27 +7,26 @@ import org.geo.scala.graph.sedgewick.GraphUtilitiesGen._
 import org.geo.scala.graph.sedgewick.adjacency.Graph
 import scala.collection.mutable.Queue
 
-trait CC[T] {
+trait KosarajuSharirSCC[T] {
   /** find all paths from source s **/
   def process(t: GraphConstants.Value): Unit
-  def connected(v: T, w: T): Boolean // are v and w connected ?
+  def stronglyConnected(v: T, w: T): Boolean // are v and w connected ?
   def count: Int // number of connected components
   def id(v: T): Option[Int] // component identifier for v, key in adj map
 }
 
-object CC {
-  def apply[T](graph: Graph[T]): CC[T] =
-    new CCImpl[T](graph)
+object KosarajuSharirSCC {
+  def apply[T](graph: Graph[T]): KosarajuSharirSCC[T] =
+    new KosarajuSharirSCCImpl[T](graph)
 
   /** private implementation **/
-  private class CCImpl[T](
-    private val graph: Graph[T]) extends CC[T] {
+  private class KosarajuSharirSCCImpl[T](
+    private val graph: Graph[T]) extends KosarajuSharirSCC[T] {
 
-    private var recurTyp: GraphConstants.Value = _
     println("instantiating DepthFirstPathsImpl")
     /** map used to determine is a vertex is connected to the input vertex,s **/
     private var marked: mutable.Map[T, Boolean] = _
-
+    /** map used to store pointers to directly connected components **/
     private var idV: mutable.Map[T, Int] = _
     private var counter = 0
 
@@ -39,10 +38,6 @@ object CC {
      *         private implementations
      */
     private def DEBUG = false
-
-    /**
-     *         private implementations
-     */
 
     /**
      * Two versions of a depth first search of a graph used
@@ -97,7 +92,7 @@ object CC {
       }
     }
 
-    override def toString = "CC:" + counter
+    override def toString = "KosarajuSharirSCC:" + counter
 
     /**
      *          public api implementation
@@ -114,7 +109,7 @@ object CC {
       if (t == None) false
       else t get
     }
-    def connected(v: T, w: T): Boolean = {
+    def stronglyConnected(v: T, w: T): Boolean = {
       id(v) == id(w)
     }
 
@@ -130,21 +125,22 @@ object CC {
 
       /** count of all vertices connected to input vertex s **/
       counter = 0
-      /**
-       * Constructor Processing
-       */
-      recurTyp = recurType
+      /** first create a DepthFirstOrder Object **/
+      /** pass it a reverse of the input adjacency graph **/
+      val order = DepthFirstOrder(graph.reverseGraph)
+      order.process(recurType)
       var fun: (Graph[T],T) => Unit = null
-      recurTyp match {
+      recurType match {
         case GraphConstants.recursive     => fun = dfsRecursive _
         case GraphConstants.non_recursive => fun = dfs _
       }
     /**
-     * This is the call in the constructor of ConnectedComponentsImpl
-     * Basically, this will traverse all of the verticies until all have
-     * been visited. Dfs will be called on each "non-visited" vertex
+     * Do a depth first search on the reversePost traversal of 
+     * the DepthFirstOrder graph object, passing in the pre-reversed
+     * graph object. 
+     * 
      */
-    for ((k,v) <- graph.getGraph) {
+    for (k <- order.reversePostorder) {
       if ( ! hasPathTo(k) ) {
         fun(graph,k)
         counter += 1
@@ -160,27 +156,4 @@ object CC {
     }
   }
 
-}
-
-object runner extends App {
-
-  val graph = instantiateGraph[String, Int](",")(CITIES)
-  val cc = CC(graph)
-  cc.process(GraphConstants.non_recursive)
-  println("%d components".format(cc.count))
-  var components: mutable.Map[Int,Queue[String]] = 
-    new mutable.HashMap[Int,Queue[String]]() 
-  
-  for ( i <- 0 until cc.count ) components(i) = Queue[String]()
-  
-  for ( g <- graph.getGraph.keySet ) {
-    components( cc.id(g).get ).enqueue(g.name)
-  }
-  
-  for ( i <- 0 until cc.count ) {
-    for ( q <- components (i) ) {
-      print(q + " ")
-    }
-    println
-  } 
 }

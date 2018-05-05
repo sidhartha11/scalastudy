@@ -1,5 +1,7 @@
 package org.geo.scala.graph.sedgewick
 
+import util.control.Breaks._
+
 import org.geo.scala.graph.GraphConstants
 import org.geo.scala.graph.GraphVertexGen
 import org.geo.scala.graph.sedgewick.adjacency.Graph
@@ -60,8 +62,8 @@ object TestDiGraph {
   def testDirectedCycle {
     /** first create a directed adjacency graph **/
     val adj = instantiateGraph[String, Int]("|")("syntheticCities.txt", GraphConstants.directed)
-    
-        if (DEBUG) {
+
+    if (DEBUG) {
       adj.printGraph
     }
     /** create a DirectedDFS instance **/
@@ -309,8 +311,15 @@ object TestDiGraph {
 
     }
   }
-  def convertAlgorithmFormat = {
-    
+  def testBreakable = {
+    var list:IndexedSeq[Int] = IndexedSeq[Int]()
+    breakable {
+        for ( i <- 0 until 20 ){
+          if ( i == 10 ) break
+          list = list :+ i
+        }
+    }
+    println(list)
   }
   def main(args: Array[String]) {
 
@@ -319,7 +328,8 @@ object TestDiGraph {
 
     /** test using user console input **/
     // getStdin(GraphConstants.non_recursive)
-    testDirectedCycle
+    // testDirectedCycle
+    testBreakable
 
   }
 }
