@@ -1,12 +1,11 @@
 package org.geo.scala.graph
 
-case class GraphVertex(name: String, weight: Int, visited: Boolean) {
+final case class GraphVertex[T](name: T)
+{
   override def equals(o: Any) = o match {
-    case that: GraphVertex => that.name.equals(this.name)
+    case that: GraphVertex[T] => that.name.equals(this.name)
     case _                 => false
   }
   override def hashCode = name.hashCode
-//  override def toString = name + ":" + weight + ":" + visited
-  override def toString = name 
-
+  override def toString = name.asInstanceOf[String] 
 }
